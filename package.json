@@ -1,0 +1,19 @@
+{
+  "name": "browserify-sign",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "pemstrip": "0.0.1",
+    "asn1.js-rfc3280": "^0.5.1",
+    "inherits": "^2.0.1",
+    "bn.js": "^0.15.2",
+    "asn1.js": "^0.6.4",
+    "readable-stream": "^1.0.33"
+  }
+}
