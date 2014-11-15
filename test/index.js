@@ -17,8 +17,8 @@ function testIt(pub, priv, message, scheme) {
 		t.equals(mySig.toString('hex'), nodeSig.toString('hex'), 'equal sigs');
 		var myVer = myCrypto.createVerify(scheme);
 		var nodeVer = nodeCrypto.createVerify(scheme);
-		t.ok(nodeVer.update(message).verify(pub, mySig), 'test node');
-		t.ok(myVer.update(message).verify(pub, nodeSig), 'test me');
+		t.ok(nodeVer.update(message).verify(pub, mySig), 'node validate my sig');
+		t.ok(myVer.update(message).verify(pub, nodeSig), 'me validate node sig');
 	});
 }
 testIt(pub1024, priv1024, new Buffer('sha224 with 1024 keys'), 'RSA-SHA224');
