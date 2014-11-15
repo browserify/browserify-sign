@@ -10,7 +10,7 @@ a package to duplicate the functionality of node's crypto public key functions, 
 # todo
 
 - ~~tests to make sure we actually did it~~
-- chinese remainder theorom?
+- ~~chinese remainder theorom?~~
 - eliptical curve signing
 - publicEncrypt and privateDecrypt?
 - ~~other key encodings (non rss format public keys)~~

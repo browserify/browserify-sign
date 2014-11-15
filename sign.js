@@ -14,16 +14,27 @@ function sign(hash, key, crypto) {
   while (++i < hash.length) {
     pad.push(hash[i]);
   }
-  hash = pad;
-  var red = bn.mont(priv.modulus);
-  hash = new bn(hash).toRed(red);
-
-  hash = hash.redPow(priv.privateExponent);
-  var out = new Buffer(hash.fromRed().toArray());
+  
+  var out = crt(pad, priv);
   if (out.length < len) {
     var prefix = new Buffer(len - out.length);
     prefix.fill(0);
     out = Buffer.concat([prefix, out], len);
   }
   return out;
+}
+function crt(msg, priv) {
+  var c1 = new bn(msg).toRed(bn.mont(priv.prime1));
+  var c2 = new bn(msg).toRed(bn.mont(priv.prime2));
+  var qinv = new bn(priv.coefficient);
+  var p = new bn(priv.prime1);
+  var q = new bn(priv.prime2);
+  var m1 = c1.redPow(priv.exponent1)
+  var m2 = c2.redPow(priv.exponent2);
+  m1 = m1.fromRed();
+  m2 = m2.fromRed();
+  var h = m1.isub(m2).imul(qinv).mod(p);
+  h.imul(q);
+  m2.iadd(h);
+  return new Buffer(m2.toArray());
 }
