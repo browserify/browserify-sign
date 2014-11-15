@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node test/index.js | tspec"
   },
   "author": "",
   "license": "ISC",
@@ -15,5 +15,9 @@
     "bn.js": "^0.15.2",
     "asn1.js": "^0.6.4",
     "readable-stream": "^1.0.33"
+  },
+  "devDependencies": {
+    "tap-spec": "^1.0.1",
+    "tape": "^3.0.3"
   }
 }

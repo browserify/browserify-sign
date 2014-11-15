@@ -13,7 +13,6 @@ function verify(sig, hash, key) {
   sig = sig.redPow(new bn(pub.publicExponent));
 
   sig = new Buffer(sig.fromRed().toArray());
-  console.log(sig.toString('hex'));
   sig = sig.slice(sig.length - hash.length);
   var out = 0;
   var len = sig.length;

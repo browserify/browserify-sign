@@ -20,6 +20,11 @@ function sign(hash, key) {
   hash = new bn(hash).toRed(red);
 
   hash = hash.redPow(priv.privateExponent);
-
-  return new Buffer(hash.fromRed().toArray());
+  var out = new Buffer(hash.fromRed().toArray());
+  if (out.length < len) {
+    var prefix = new Buffer(len - out.length);
+    prefix.fill(0);
+    out = Buffer.concat([prefix, out], len);
+  }
+  return out;
 }
