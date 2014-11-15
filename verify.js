@@ -1,11 +1,10 @@
 // much of this based on https://github.com/indutny/self-signed/blob/gh-pages/lib/rsa.js
-var pemstrip = require('pemstrip');
-var asn1 = require('./asn1');
+var parseKeys = require('./parseKeys');
+
 var bn = require('bn.js');
 module.exports = verify;
 function verify(sig, hash, key) {
-  var pub = asn1.RSAPublicKey.decode(new Buffer(pemstrip.strip(key).base64, 'base64'), 'der');
-
+  var pub = parseKeys(key);
 
   var red = bn.mont(pub.modulus);
   sig = new bn(sig).toRed(red);
