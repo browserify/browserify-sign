@@ -2,8 +2,8 @@
 var parseKeys = require('./parseKeys');
 var bn = require('bn.js');
 module.exports = sign;
-function sign(hash, key) {
-  var priv = parseKeys(key);
+function sign(hash, key, crypto) {
+  var priv = parseKeys(key, crypto);
   var len = priv.modulus.byteLength();
   var pad = [ 0, 1 ];
   while (hash.length + pad.length + 1 < len) {

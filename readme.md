@@ -15,4 +15,4 @@ a package to duplicate the functionality of node's crypto public key functions, 
 - publicEncrypt and privateDecrypt?
 - ~~other key encodings (non rss format public keys)~~
 - dsa keys?
-- keys with passwords
+- ~~keys with passwords~~

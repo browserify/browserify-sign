@@ -13,6 +13,16 @@ var nonrsa1024 = {
 	private: fs.readFileSync(__dirname + '/1024.priv'),
 	public: fs.readFileSync(__dirname + '/1024.pub')
 }
+var pass1024 = {
+	private: {
+		passphrase: 'fooo',
+		key:fs.readFileSync(__dirname + '/pass.1024.priv')
+	},
+	public: fs.readFileSync(__dirname + '/pass.1024.pub')
+}
+function isNode10() {
+  return process.version && process.version.split('.').length === 3 && parseInt(process.version.split('.')[1], 10) <= 10;
+}
 var nodeCrypto = require('crypto');
 var myCrypto = require('../');
 function testIt(keys, message, scheme) {
@@ -32,6 +42,7 @@ function testIt(keys, message, scheme) {
 		t.ok(myVer.update(message).verify(pub, nodeSig), 'me validate node sig');
 	});
 }
+
 testIt(rsa1024, new Buffer('sha224 with 1024 keys'), 'RSA-SHA224');
 testIt(nonrsa1024, new Buffer('sha224 with 1024 keys non-rsa key'), 'RSA-SHA224');
 testIt(rsa2028, new Buffer('sha224 with 2028 keys'), 'RSA-SHA224');
@@ -44,3 +55,9 @@ testIt(rsa2028, new Buffer('SHA384 with 2028 keys'), 'RSA-SHA384');
 testIt(rsa1024, new Buffer('SHA512 with 1024 keys'), 'RSA-SHA512');
 testIt(nonrsa1024, new Buffer('sha512 with 1024 keys non-rsa key'), 'RSA-SHA512');
 testIt(rsa2028, new Buffer('SHA512 with 2028 keys'), 'RSA-SHA512');
+if (!isNode10()) {
+	testIt(pass1024, new Buffer('sha224 with 1024 keys and password'), 'RSA-SHA224');
+	testIt(pass1024, new Buffer('sha256 with 1024 keys and password'), 'RSA-SHA256');
+	testIt(pass1024, new Buffer('sha384 with 1024 keys and password'), 'RSA-SHA384');
+	testIt(pass1024, new Buffer('sha512 with 1024 keys and password'), 'RSA-SHA512');
+}

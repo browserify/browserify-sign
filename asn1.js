@@ -37,6 +37,28 @@ var PrivateKeyInfo = asn1.define('PrivateKeyInfo', function() {
   );
 });
 exports.PrivateKey = PrivateKeyInfo;
+var EncryptedPrivateKeyInfo = asn1.define('EncryptedPrivateKeyInfo', function() {
+  this.seq().obj(
+    this.key('algorithm').seq().obj(
+      this.key('id').objid(),
+      this.key('decrypt').seq().obj(
+        this.key('kde').seq().obj(
+          this.key('id').objid(),
+          this.key('kdeparams').seq().obj(
+            this.key('salt').octstr(),
+            this.key('iters').int()
+          )
+        ),
+        this.key('cipher').seq().obj(
+          this.key('algo').objid(),
+          this.key('iv').octstr()
+        )
+      )
+    ),
+    this.key('subjectPrivateKey').octstr()
+  );
+});
+exports.EncryptedPrivateKey = EncryptedPrivateKeyInfo;
 var GeneralName = asn1.define('GeneralName', function() {
   this.choice({
     dNSName: this.implicit(2).ia5str()

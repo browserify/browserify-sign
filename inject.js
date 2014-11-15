@@ -21,6 +21,7 @@ function Sign(algorithm, crypto) {
 	var data = algos[algorithm];
 	this._hash = crypto.createHash(data.hash);
 	this._tag = data.id;
+	this._crypto = crypto;
 };
 Sign.prototype._write = function _write(data, _, done) {
 	this._hash.update(data);
@@ -34,7 +35,7 @@ Sign.prototype.update = function update(data) {
 Sign.prototype.sign = function signMethod(key, enc) {
 	this.end();
 	var hash = this._hash.digest();
-	var sig = sign(Buffer.concat([this._tag, hash]), key);
+	var sig = sign(Buffer.concat([this._tag, hash]), key, this._crypto);
 	if (enc) {
 		sig = sig.toString(enc);
 	}
