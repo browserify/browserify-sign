@@ -13,4 +13,6 @@ a package to duplicate the functionality of node's crypto public key functions, 
 - chinese remainder theorom?
 - eliptical curve signing
 - publicEncrypt and privateDecrypt?
-- other key encodings (non rss format public keys)
+- ~~other key encodings (non rss format public keys)~~
+- dsa keys?
+- keys with passwords
