@@ -19,6 +19,9 @@ inherits(Sign, Writable);
 function Sign(algorithm, crypto) {
 	Writable.call(this);
 	var data = algos[algorithm];
+	if (!data) {
+		throw new Error('Unknown message digest');
+	}
 	this._hash = crypto.createHash(data.hash);
 	this._tag = data.id;
 	this._crypto = crypto;
@@ -46,6 +49,9 @@ inherits(Verify, Writable);
 function Verify(algorithm, crypto) {
 	Writable.call(this);
 	var data = algos[algorithm];
+	if (!data) {
+		throw new Error('Unknown message digest');
+	}
 	this._hash = crypto.createHash(data.hash);
 	this._tag = data.id;
 };

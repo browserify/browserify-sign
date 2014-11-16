@@ -29,6 +29,16 @@ exports.RSAPublicKey = RSAPublicKey;
 
 var PublicKey = rfc3280.SubjectPublicKeyInfo;
 exports.PublicKey = PublicKey;
+var ECPublicKey =  asn1.define('ECPublicKey', function() {
+  this.seq().obj(
+    this.key('algorithm').seq().obj(
+      this.key('id').objid(),
+      this.key('curve').objid()
+    ),
+    this.key('subjectPrivateKey').bitstr()
+  );
+});
+exports.ECPublicKey = ECPublicKey;
 var PrivateKeyInfo = asn1.define('PrivateKeyInfo', function() {
   this.seq().obj(
     this.key('version').int(),
@@ -59,39 +69,20 @@ var EncryptedPrivateKeyInfo = asn1.define('EncryptedPrivateKeyInfo', function() 
   );
 });
 exports.EncryptedPrivateKey = EncryptedPrivateKeyInfo;
-var GeneralName = asn1.define('GeneralName', function() {
-  this.choice({
-    dNSName: this.implicit(2).ia5str()
-  });
-});
-exports.GeneralName = GeneralName;
 
-var GeneralNames = asn1.define('GeneralNames', function() {
-  this.seqof(GeneralName);
-});
-exports.GeneralNames = GeneralNames;
 
-var Signature = asn1.define('Signature', function() {
+
+var ECPrivateKey = asn1.define('ECPrivateKey', function() {
   this.seq().obj(
-    this.key('algorithm').seq().obj(
-      this.key('algorithm').objid(),
-      this.null_()
-    ),
-    this.key('digest').octstr()
+    this.key('version').int(),
+    this.key('privateKey').octstr(),
+    this.key('parameters').optional().explicit(0).use(ECParameters),
+    this.key('publicKey').optional().explicit(1).bitstr()
   );
 });
-exports.Signature = Signature;
-
-var IA5Str = asn1.define('IA5Str', function() {
-  this.ia5str();
+exports.ECPrivateKey = ECPrivateKey;
+var ECParameters = asn1.define('ECParameters', function() {
+  this.choice({
+    namedCurve: this.objid()
+  });
 });
-exports.IA5Str = IA5Str;
-
-exports.SHA256 = [ 2, 16, 840, 1, 101, 3, 4, 2, 1 ];
-exports.SHA256RSA = [ 1, 2, 840, 113549, 1, 1, 11 ];
-exports.RSA = [ 1, 2, 840, 113549, 1, 1, 1 ];
-exports.COMMONNAME = [ 2, 5, 4, 3 ];
-exports.ALTNAME = [ 2, 5, 29, 17 ];
-
-exports.TBSCertificate = rfc3280.TBSCertificate;
-exports.Certificate = rfc3280.Certificate;

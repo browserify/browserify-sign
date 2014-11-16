@@ -12,14 +12,19 @@ function parseKeys(buffer, crypto) {
 	var stripped = pemstrip.strip(buffer);
 	var type = stripped.tag;
 	var data = new Buffer(stripped.base64, 'base64');
-	var subtype
+	var subtype,ndata;
 	switch (type) {
 		case 'PUBLIC KEY':
-		  data = asn1.PublicKey.decode(data, 'der');
-		  subtype = data.algorithm.algorithm.join('.');
+		  ndata = asn1.PublicKey.decode(data, 'der');
+		  subtype = ndata.algorithm.algorithm.join('.');
 		  switch(subtype) {
 		  	case '1.2.840.113549.1.1.1':
-		  	  return asn1.RSAPublicKey.decode(data.subjectPublicKey.data, 'der');
+		  	  return asn1.RSAPublicKey.decode(ndata.subjectPublicKey.data, 'der');
+		  	case '1.2.840.10045.2.1':
+		  		return {
+		  			type: 'ec',
+		  			data:  asn1.ECPublicKey.decode(data, 'der')
+		  		};
 		  	default: throw new Error('unknown key id ' +  subtype);
 		  }
 		  throw new Error('unknown key type ' +  type);
@@ -40,6 +45,8 @@ function parseKeys(buffer, crypto) {
 		  return asn1.RSAPublicKey.decode(data, 'der');
 		case 'RSA PRIVATE KEY':
 		  return asn1.RSAPrivateKey.decode(data, 'der');
+		case 'EC PRIVATE KEY':
+		  return asn1.ECPrivateKey.decode(data, 'der');
 		default: throw new Error('unknown key type ' +  type);
 	}
 }

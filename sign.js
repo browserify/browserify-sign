@@ -1,9 +1,13 @@
 // much of this based on https://github.com/indutny/self-signed/blob/gh-pages/lib/rsa.js
 var parseKeys = require('./parseKeys');
 var bn = require('bn.js');
+var elliptic = require('elliptic');
 module.exports = sign;
 function sign(hash, key, crypto) {
   var priv = parseKeys(key, crypto);
+  if (priv.parameters && priv.parameters.type === 'namedCurve') {
+    return ecSign(hash, priv, crypto);
+  }
   var len = priv.modulus.byteLength();
   var pad = [ 0, 1 ];
   while (hash.length + pad.length + 1 < len) {
@@ -37,4 +41,15 @@ function crt(msg, priv) {
   h.imul(q);
   m2.iadd(h);
   return new Buffer(m2.toArray());
+}
+function ecSign(hash, priv, crypto) {
+  elliptic.rand = crypto.randomBytes;
+  var curve;
+  if (priv.parameters.value.join('.')  === '1.3.132.0.10') {
+    curve = new elliptic.ec('secp256k1');
+  }
+  var key = curve.genKeyPair();
+  key._importPrivate(priv.privateKey);
+  var out = key.sign(hash);
+  return new Buffer(out.toDER());
 }
