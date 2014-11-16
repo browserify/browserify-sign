@@ -5,7 +5,7 @@ var elliptic = require('elliptic');
 module.exports = sign;
 function sign(hash, key, crypto) {
   var priv = parseKeys(key, crypto);
-  if (priv.parameters && priv.parameters.type === 'namedCurve') {
+  if (priv.curve) {
     return ecSign(hash, priv, crypto);
   }
   var len = priv.modulus.byteLength();
@@ -45,7 +45,7 @@ function crt(msg, priv) {
 function ecSign(hash, priv, crypto) {
   elliptic.rand = crypto.randomBytes;
   var curve;
-  if (priv.parameters.value.join('.')  === '1.3.132.0.10') {
+  if (priv.curve.join('.')  === '1.3.132.0.10') {
     curve = new elliptic.ec('secp256k1');
   }
   var key = curve.genKeyPair();

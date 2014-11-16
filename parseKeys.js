@@ -33,11 +33,17 @@ function parseKeys(buffer, crypto) {
 		  data = decrypt(crypto, data, password);
 		  //falling through
 		case 'PRIVATE KEY':
-		  data = asn1.PrivateKey.decode(data, 'der');
-		  subtype = data.algorithm.algorithm.join('.');
+		  ndata = asn1.PrivateKey.decode(data, 'der');
+		  subtype = ndata.algorithm.algorithm.join('.');
 		  switch(subtype) {
 		  	case '1.2.840.113549.1.1.1':
-		  	  return asn1.RSAPrivateKey.decode(data.subjectPrivateKey, 'der');
+		  	  return asn1.RSAPrivateKey.decode(ndata.subjectPrivateKey, 'der');
+		  	case '1.2.840.10045.2.1':
+		  	  ndata =  asn1.ECPrivateWrap.decode(data, 'der');
+		  	  return {
+		  	  	curve: ndata.algorithm.curve,
+		  	  	privateKey: asn1.ECPrivateKey.decode(ndata.subjectPrivateKey, 'der').privateKey
+		  	  };
 		  	default: throw new Error('unknown key id ' +  subtype);
 		  }
 		  throw new Error('unknown key type ' +  type);
@@ -46,7 +52,11 @@ function parseKeys(buffer, crypto) {
 		case 'RSA PRIVATE KEY':
 		  return asn1.RSAPrivateKey.decode(data, 'der');
 		case 'EC PRIVATE KEY':
-		  return asn1.ECPrivateKey.decode(data, 'der');
+		  data = asn1.ECPrivateKey.decode(data, 'der');
+		  return {
+		  	curve: data.parameters.value,
+		  	privateKey: data.privateKey
+		  }
 		default: throw new Error('unknown key type ' +  type);
 	}
 }

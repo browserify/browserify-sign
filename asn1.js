@@ -39,6 +39,17 @@ var ECPublicKey =  asn1.define('ECPublicKey', function() {
   );
 });
 exports.ECPublicKey = ECPublicKey;
+var ECPrivateWrap =  asn1.define('ECPrivateWrap', function() {
+  this.seq().obj(
+    this.key('version').int(),
+    this.key('algorithm').seq().obj(
+      this.key('id').objid(),
+      this.key('curve').objid()
+    ),
+    this.key('subjectPrivateKey').octstr()
+  );
+});
+exports.ECPrivateWrap = ECPrivateWrap;
 var PrivateKeyInfo = asn1.define('PrivateKeyInfo', function() {
   this.seq().obj(
     this.key('version').int(),
@@ -86,3 +97,14 @@ var ECParameters = asn1.define('ECParameters', function() {
     namedCurve: this.objid()
   });
 });
+
+var ECPrivateKey2 = asn1.define('ECPrivateKey2', function() {
+  this.seq().obj(
+    this.key('version').int(),
+    this.key('privateKey').octstr(),
+    this.key('publicKey').seq().obj(
+      this.key('key').bitstr()
+    )
+  );
+});
+exports.ECPrivateKey2 = ECPrivateKey2;
