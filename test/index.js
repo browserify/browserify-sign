@@ -70,8 +70,14 @@ function ectestIt(keys, message, scheme) {
 		t.ok(myVer.update(message).verify(pub, nodeSig), 'me validate node sig');
 	});
 }
+testIt(rsa1024, new Buffer('md5 with 1024 keys'), 'RSA-MD5');
 ectestIt(ec, new Buffer('ecdsa with sha1'), 'ecdsa-with-SHA1');
-
+testIt(rsa1024, new Buffer('md5 with 1024 keys'), 'RSA-MD5');
+testIt(rsa2028, new Buffer('md5 with 2028 keys'), 'RSA-MD5');
+testIt(nonrsa1024, new Buffer('md5 with 1024 keys non-rsa key'), 'RSA-MD5');
+testIt(rsa1024, new Buffer('rmd160 with 2028 keys'), 'RSA-RIPEMD160');
+testIt(rsa2028, new Buffer('rmd160 with 1024 keys'), 'RSA-RIPEMD160');
+testIt(nonrsa1024, new Buffer('rmd160 with 1024 keys non-rsa key'), 'RSA-RIPEMD160');
 testIt(rsa1024, new Buffer('sha1 with 1024 keys'), 'RSA-SHA1');
 testIt(rsa2028, new Buffer('sha1 with 2028 keys'), 'RSA-SHA1');
 testIt(nonrsa1024, new Buffer('sha1 with 1024 keys non-rsa key'), 'RSA-SHA1');
@@ -94,4 +100,6 @@ if (!isNode10()) {
 	testIt(pass1024, new Buffer('sha256 with 1024 keys and password'), 'RSA-SHA256');
 	testIt(pass1024, new Buffer('sha384 with 1024 keys and password'), 'RSA-SHA384');
 	testIt(pass1024, new Buffer('sha512 with 1024 keys and password'), 'RSA-SHA512');
+	testIt(pass1024, new Buffer('rmd160 with 1024 keys and password'), 'RSA-RIPEMD160');
+	testIt(pass1024, new Buffer('md5 with 1024 keys and password'), 'RSA-MD5');
 }

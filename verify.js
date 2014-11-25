@@ -8,6 +8,17 @@ function verify(sig, hash, key) {
   if (pub.type === 'ec') {
     return ecVerify(sig, hash, pub);
   }
+  var len = pub.modulus.byteLength();
+  var pad = [ 0, 1 ];
+  while (hash.length + pad.length + 1 < len) {
+    pad.push(0xff);
+  }
+  pad.push(0x00);
+  var i = -1;
+  while (++i < hash.length) {
+    pad.push(hash[i]);
+  }
+  pad = hash;
   var red = bn.mont(pub.modulus);
   sig = new bn(sig).toRed(red);
 
@@ -16,8 +27,8 @@ function verify(sig, hash, key) {
   sig = new Buffer(sig.fromRed().toArray());
   sig = sig.slice(sig.length - hash.length);
   var out = 0;
-  var len = sig.length;
-  var i = -1;
+  len = sig.length;
+  i = -1;
   while (++i < len) {
     out += (sig[i] ^ hash[i]);
   }
