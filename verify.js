@@ -1,5 +1,5 @@
 // much of this based on https://github.com/indutny/self-signed/blob/gh-pages/lib/rsa.js
-var parseKeys = require('./parseKeys');
+var parseKeys = require('parse-asn1');
 var elliptic = require('elliptic');
 var bn = require('bn.js');
 module.exports = verify;

@@ -13,12 +13,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "asn1.js": "^0.6.4",
-    "asn1.js-rfc3280": "^0.5.1",
     "bn.js": "^0.15.2",
     "elliptic": "^0.15.14",
     "inherits": "^2.0.1",
-    "pemstrip": "0.0.1",
+    "parse-asn1": "^1.0.0",
     "readable-stream": "^1.0.33"
   },
   "devDependencies": {
