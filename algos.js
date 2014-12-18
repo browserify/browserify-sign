@@ -28,6 +28,11 @@ exports['ecdsa-with-SHA1'] = {
 	hash: 'sha1',
 	id: new Buffer('', 'hex')
 };
+exports.DSA = exports['DSA-SHA1'] = exports['DSA-SHA'] = {
+  sign: 'dsa',
+  hash: 'sha1',
+  id: new Buffer('', 'hex')
+};
 exports['RSA-RIPEMD160'] = exports.ripemd160WithRSA = {
   sign: 'rsa',
   hash: 'rmd160',

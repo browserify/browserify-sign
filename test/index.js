@@ -4,33 +4,41 @@ var priv1024 = fs.readFileSync(__dirname + '/rsa.1024.priv');
 var rsa1024 = {
 	private: fs.readFileSync(__dirname + '/rsa.1024.priv'),
 	public: fs.readFileSync(__dirname + '/rsa.1024.pub')
-}
+};
 var rsa2028 = {
 	private: fs.readFileSync(__dirname + '/rsa.2028.priv'),
 	public: fs.readFileSync(__dirname + '/rsa.2028.pub')
-}
+};
 var nonrsa1024 = {
 	private: fs.readFileSync(__dirname + '/1024.priv'),
 	public: fs.readFileSync(__dirname + '/1024.pub')
-}
+};
 var pass1024 = {
 	private: {
 		passphrase: 'fooo',
 		key:fs.readFileSync(__dirname + '/pass.1024.priv')
 	},
 	public: fs.readFileSync(__dirname + '/pass.1024.pub')
-}
+};
 var ec = {
 	private: fs.readFileSync(__dirname + '/ec.priv'),
 	public: fs.readFileSync(__dirname + '/ec.pub')
-}
+};
 var ecpass = {
 	private: {
 		key: fs.readFileSync(__dirname + '/ec.pass.priv'),
 		passphrase: 'bard'
 	},
 	public: fs.readFileSync(__dirname + '/ec.pub')
-}
+};
+var dsa = {
+	private: fs.readFileSync(__dirname + '/dsa.1024.priv'),
+	public: fs.readFileSync(__dirname + '/dsa.1024.pub')
+};
+var dsa2 = {
+	private: fs.readFileSync(__dirname + '/dsa.2048.priv'),
+	public: fs.readFileSync(__dirname + '/dsa.2048.pub')
+};
 function isNode10() {
   return process.version && process.version.split('.').length === 3 && parseInt(process.version.split('.')[1], 10) <= 10;
 }
@@ -70,6 +78,8 @@ function ectestIt(keys, message, scheme) {
 		t.ok(myVer.update(message).verify(pub, nodeSig), 'me validate node sig');
 	});
 }
+ectestIt(dsa, new Buffer('dsa with 1024 keys'), 'DSA');
+ectestIt(dsa2, new Buffer('dsa with 2048 keys'), 'DSA-SHA1');
 testIt(rsa1024, new Buffer('md5 with 1024 keys'), 'RSA-MD5');
 ectestIt(ec, new Buffer('ecdsa with sha1'), 'ecdsa-with-SHA1');
 testIt(rsa1024, new Buffer('md5 with 1024 keys'), 'RSA-MD5');
