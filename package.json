@@ -16,7 +16,7 @@
     "bn.js": "^0.15.2",
     "elliptic": "^0.15.14",
     "inherits": "^2.0.1",
-    "parse-asn1": "^1.1.0",
+    "parse-asn1": "^1.2.0",
     "readable-stream": "^1.0.33"
   },
   "devDependencies": {
