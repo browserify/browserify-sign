@@ -1,6 +1,6 @@
 var sign = require('./sign');
 var verify = require('./verify');
-var stream = require('readable-stream');
+var stream = require('stream');
 var inherits = require('inherits');
 var algos = require('./algos');
 'use strict';

@@ -16,11 +16,10 @@
     "bn.js": "^0.15.2",
     "elliptic": "^0.15.14",
     "inherits": "^2.0.1",
-    "parse-asn1": "^1.2.0",
-    "readable-stream": "^1.0.33"
+    "parse-asn1": "^1.2.0"
   },
   "devDependencies": {
     "tap-spec": "^1.0.1",
     "tape": "^3.0.3"
   }
-}
+} 
