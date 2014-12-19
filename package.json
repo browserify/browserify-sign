@@ -1,6 +1,6 @@
 {
   "name": "browserify-sign",
-  "version": "2.6.0",
+  "version": "2.6.1",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -22,4 +22,4 @@
     "tap-spec": "^1.0.1",
     "tape": "^3.0.3"
   }
-} 
+}
