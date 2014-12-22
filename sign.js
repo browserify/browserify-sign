@@ -2,6 +2,7 @@
 var parseKeys = require('parse-asn1');
 var bn = require('bn.js');
 var elliptic = require('elliptic');
+var crt = require("browserify-rsa");
 module.exports = sign;
 function sign(hash, key, crypto) {
   var priv = parseKeys(key, crypto);
@@ -21,28 +22,8 @@ function sign(hash, key, crypto) {
     pad.push(hash[i]);
   }
   
-  var out = crt(pad, priv);
-  if (out.length < len) {
-    var prefix = new Buffer(len - out.length);
-    prefix.fill(0);
-    out = Buffer.concat([prefix, out], len);
-  }
+  var out = crt(pad, priv, crypto);
   return out;
-}
-function crt(msg, priv) {
-  var c1 = new bn(msg).toRed(bn.mont(priv.prime1));
-  var c2 = new bn(msg).toRed(bn.mont(priv.prime2));
-  var qinv = new bn(priv.coefficient);
-  var p = new bn(priv.prime1);
-  var q = new bn(priv.prime2);
-  var m1 = c1.redPow(priv.exponent1);
-  var m2 = c2.redPow(priv.exponent2);
-  m1 = m1.fromRed();
-  m2 = m2.fromRed();
-  var h = m1.isub(m2).imul(qinv).mod(p);
-  h.imul(q);
-  m2.iadd(h);
-  return new Buffer(m2.toArray());
 }
 function ecSign(hash, priv, crypto) {
   elliptic.rand = crypto.randomBytes;
