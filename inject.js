@@ -5,12 +5,12 @@ var inherits = require('inherits');
 var algos = require('./algos');
 'use strict';
 module.exports = function (exports, crypto) {
-	exports.createSign = createSign;
+	exports.createSign = exports.Sign = createSign;
 	function createSign(algorithm) {
 
 		return new Sign(algorithm, crypto);
 	}
-	exports.createVerify = createVerify;
+	exports.createVerify = exports.Verify = createVerify;
 	function createVerify(algorithm) {
 		return new Verify(algorithm, crypto);
 	}
