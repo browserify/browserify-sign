@@ -15,7 +15,7 @@
   "dependencies": {
     "bn.js": "^1.0.0",
     "browserify-rsa": "^1.1.0",
-    "elliptic": "^0.15.14",
+    "elliptic": "^1.0.0",
     "inherits": "^2.0.1",
     "parse-asn1": "^2.0.0"
   },
