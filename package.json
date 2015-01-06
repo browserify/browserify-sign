@@ -13,7 +13,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "bn.js": "^0.16.0",
+    "bn.js": "^1.0.0",
     "browserify-rsa": "^1.1.0",
     "elliptic": "^0.15.14",
     "inherits": "^2.0.1",
