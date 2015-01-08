@@ -46,9 +46,10 @@ function dsaSign(hash, priv, crypto) {
   var k;
   var H = new bn(hash);
   var s = false;
+  var kv = getKay(x, hash, crypto);
   while (s === false) {
     while (!r.cmpn(0)) {
-      k = getKay(q, crypto);
+      k = makeKey(q, kv, crypto);
       r = makeR(g, k, p, q);
     }
     s = k.invm(q).imul(H.add(x.imul(r).mod(q)).mod(q)).mod(q);
@@ -75,12 +76,65 @@ function toDER(r, s) {
   res = res.concat(r, [ 0x02, s.length ], s);
   return new Buffer(res);
 }
-function getKay(q, crypto) {
-  var k = new bn(crypto.randomBytes(q.byteLength()));
-  while (k.cmp(q) >= 0) {
-    k = new bn(crypto.randomBytes(q.byteLength()));
+function getKay(x, hash, crypto) {
+  x = new Buffer(x.toArray());
+  var algo = 'sha1';//I know!
+  var hlen = hash.length;
+  var v = new Buffer(hlen);
+  v.fill(1);
+  var k = new Buffer(hlen);
+  k.fill(0);
+  k = crypto.createHmac('sha1', k)
+    .update(v)
+    .update(new Buffer([0]))
+    .update(x)
+    .update(hash)
+    .digest();
+  v = crypto.createHmac(algo, k)
+    .update(v)
+    .digest();
+  k = crypto.createHmac(algo, k)
+    .update(v)
+    .update(new Buffer([1]))
+    .update(x)
+    .update(hash)
+    .digest();
+  return {
+    k:k,
+    v:v
+  };
+}
+function bits2int(bits, q) {
+  bits = new bn(bits);
+  var shift = bits.bitLength() - q.bitLength();
+  if (shift > 0) {
+    bits.ishrn(shift);
   }
-  return k;
+  return bits;
+}
+function makeKey(q, kv, crypto) {
+  var t;
+  var k;
+  while (true) {
+    t = new Buffer('');
+    while (t.length * 8 < q.bitLength()) {
+      kv.v = crypto.createHmac('sha1', kv.k)
+        .update(kv.v)
+        .digest();
+      t = Buffer.concat([t, kv.v]);
+    }
+    k = bits2int(t, q);
+    kv.k =  crypto.createHmac('sha1', kv.k)
+        .update(kv.v)
+        .update(new Buffer([0]))
+        .digest();
+    kv.v = crypto.createHmac('sha1', kv.k)
+        .update(kv.v)
+        .digest();
+    if (k.cmp(q) === -1) {
+      return k;
+    }
+  }
 }
 function makeR(g, k, p, q) {
   return g.toRed(bn.mont(p)).redPow(k).fromRed().mod(q);
