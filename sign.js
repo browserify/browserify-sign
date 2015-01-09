@@ -4,12 +4,12 @@ var bn = require('bn.js');
 var elliptic = require('elliptic');
 var crt = require("browserify-rsa");
 module.exports = sign;
-function sign(hash, key, crypto) {
+function sign(hash, key, hashType, crypto) {
   var priv = parseKeys(key, crypto);
   if (priv.curve) {
     return ecSign(hash, priv, crypto);
   } else if (priv.type === 'dsa') {
-    return dsaSign(hash, priv, crypto);
+    return dsaSign(hash, priv, hashType, crypto);
   }
   var len = priv.modulus.byteLength();
   var pad = [ 0, 1 ];
@@ -36,7 +36,7 @@ function ecSign(hash, priv, crypto) {
   var out = key.sign(hash);
   return new Buffer(out.toDER());
 }
-function dsaSign(hash, priv, crypto) {
+function dsaSign(hash, priv, algo, crypto) {
   var x = priv.params.priv_key;
   var p = priv.params.p;
   var q = priv.params.q;
@@ -44,15 +44,13 @@ function dsaSign(hash, priv, crypto) {
   var g = priv.params.g;
   var r = new bn(0);
   var k;
-  var H = new bn(hash);
+  var H = bits2int(hash, q).mod(q);
   var s = false;
-  var kv = getKay(x, hash, crypto);
+  var kv = getKay(x, q, hash, algo, crypto);
   while (s === false) {
-    while (!r.cmpn(0)) {
-      k = makeKey(q, kv, crypto);
-      r = makeR(g, k, p, q);
-    }
-    s = k.invm(q).imul(H.add(x.imul(r).mod(q)).mod(q)).mod(q);
+    k = makeKey(q, kv, algo, crypto);
+    r = makeR(g, k, p, q);
+    s = k.invm(q).imul(H.add(x.mul(r))).mod(q);
     if (!s.cmpn(0)) {
       s = false;
       r = new bn(0);
@@ -69,26 +67,32 @@ function toDER(r, s) {
     r = [ 0 ].concat(r);
   // Pad values
   if (s[0] & 0x80)
-    s = [ 0 ].concat(s);
+    s = [0].concat(s);
 
   var total = r.length + s.length + 4;
   var res = [ 0x30, total, 0x02, r.length ];
   res = res.concat(r, [ 0x02, s.length ], s);
   return new Buffer(res);
 }
-function getKay(x, hash, crypto) {
+module.exports.getKay = getKay;
+function getKay(x, q, hash, algo, crypto) {
   x = new Buffer(x.toArray());
-  var algo = 'sha1';//I know!
+  if (x.length < q.byteLength()) {
+    var zeros = new Buffer(q.byteLength() - x.length);
+    zeros.fill(0);
+    x = Buffer.concat([zeros, x]);
+  }
   var hlen = hash.length;
+  var hbits = bits2octets(hash, q);
   var v = new Buffer(hlen);
   v.fill(1);
   var k = new Buffer(hlen);
   k.fill(0);
-  k = crypto.createHmac('sha1', k)
+  k = crypto.createHmac(algo, k)
     .update(v)
     .update(new Buffer([0]))
     .update(x)
-    .update(hash)
+    .update(hbits)
     .digest();
   v = crypto.createHmac(algo, k)
     .update(v)
@@ -97,38 +101,47 @@ function getKay(x, hash, crypto) {
     .update(v)
     .update(new Buffer([1]))
     .update(x)
-    .update(hash)
+    .update(hbits)
+    .digest();
+  v = crypto.createHmac(algo, k)
+    .update(v)
     .digest();
   return {
     k:k,
     v:v
   };
 }
-function bits2int(bits, q) {
-  bits = new bn(bits);
-  var shift = bits.bitLength() - q.bitLength();
+function bits2int(obits, q) {
+  bits = new bn(obits);
+  var shift = obits.length * 8 - q.bitLength();
   if (shift > 0) {
     bits.ishrn(shift);
   }
   return bits;
 }
-function makeKey(q, kv, crypto) {
+function bits2octets (bits, q) {
+  bits = bits2int(bits, q);
+  bits = bits.mod(q);
+  return new Buffer(bits.toArray());
+}
+module.exports.makeKey = makeKey;
+function makeKey(q, kv, algo, crypto) {
   var t;
   var k;
   while (true) {
     t = new Buffer('');
     while (t.length * 8 < q.bitLength()) {
-      kv.v = crypto.createHmac('sha1', kv.k)
+      kv.v = crypto.createHmac(algo, kv.k)
         .update(kv.v)
         .digest();
       t = Buffer.concat([t, kv.v]);
     }
     k = bits2int(t, q);
-    kv.k =  crypto.createHmac('sha1', kv.k)
+    kv.k =  crypto.createHmac(algo, kv.k)
         .update(kv.v)
         .update(new Buffer([0]))
         .digest();
-    kv.v = crypto.createHmac('sha1', kv.k)
+    kv.v = crypto.createHmac(algo, kv.k)
         .update(kv.v)
         .digest();
     if (k.cmp(q) === -1) {
