@@ -33,22 +33,22 @@ exports.DSA = exports['DSA-SHA1'] = exports['DSA-SHA'] = {
   hash: 'sha1',
   id: new Buffer('', 'hex')
 };
-exports['DSA-SHA224'] = {
+exports['DSA-SHA224'] = exports['DSA-WITH-SHA224'] = {
   sign: 'dsa',
   hash: 'sha224',
   id: new Buffer('', 'hex')
 };
-exports['DSA-SHA256'] = {
+exports['DSA-SHA256'] = exports['DSA-WITH-SHA256'] = {
   sign: 'dsa',
   hash: 'sha256',
   id: new Buffer('', 'hex')
 };
-exports['DSA-SHA384'] = {
+exports['DSA-SHA384'] = exports['DSA-WITH-SHA384'] = {
   sign: 'dsa',
   hash: 'sha384',
   id: new Buffer('', 'hex')
 };
-exports['DSA-SHA512'] = {
+exports['DSA-SHA512'] = exports['DSA-WITH-SHA512'] = {
   sign: 'dsa',
   hash: 'sha512',
   id: new Buffer('', 'hex')
