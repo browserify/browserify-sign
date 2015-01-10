@@ -122,7 +122,13 @@ function bits2int(obits, q) {
 function bits2octets (bits, q) {
   bits = bits2int(bits, q);
   bits = bits.mod(q);
-  return new Buffer(bits.toArray());
+  var out = new Buffer(bits.toArray());
+  if (out.length < q.byteLength()) {
+    var zeros = new Buffer(q.byteLength() - out.length);
+    zeros.fill(0);
+    out = Buffer.concat([zeros, out]);
+  }
+  return out;
 }
 module.exports.makeKey = makeKey;
 function makeKey(q, kv, algo, crypto) {
