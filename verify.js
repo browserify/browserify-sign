@@ -1,6 +1,7 @@
 // much of this based on https://github.com/indutny/self-signed/blob/gh-pages/lib/rsa.js
 var parseKeys = require('parse-asn1')
 var elliptic = require('elliptic')
+var curves = require('./curves')
 var BN = require('bn.js')
 module.exports = verify
 function verify (sig, hash, key) {
@@ -37,10 +38,12 @@ function verify (sig, hash, key) {
   return !out
 }
 function ecVerify (sig, hash, pub) {
-  var curve
-  if (pub.data.algorithm.curve.join('.')  === '1.3.132.0.10') {
-    curve = new elliptic.ec('secp256k1')
-  }
+  var curveId = curves[pub.data.algorithm.curve.join('.')]
+  if (!curveId)
+    throw new Error('unknown curve ' + pub.data.algorithm.curve.join('.'))
+
+  var curve = new elliptic.ec(curveId)
+
   var pubkey = pub.data.subjectPrivateKey.data
   return curve.verify(hash.toString('hex'), sig.toString('hex'), pubkey.toString('hex'))
 }

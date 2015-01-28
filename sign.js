@@ -4,6 +4,7 @@ var BN = require('bn.js')
 var elliptic = require('elliptic')
 var crt = require('browserify-rsa')
 var createHmac = require('create-hmac')
+var curves = require('./curves')
 
 module.exports = sign
 function sign (hash, key, hashType) {
@@ -28,10 +29,12 @@ function sign (hash, key, hashType) {
   return out
 }
 function ecSign (hash, priv) {
-  var curve
-  if (priv.curve.join('.')  === '1.3.132.0.10') {
-    curve = new elliptic.ec('secp256k1')
-  }
+  var curveId = curves[priv.curve.join('.')]
+  if (!curveId)
+    throw new Error('unknown curve ' + priv.curve.join('.'))
+
+  var curve = new elliptic.ec(curveId)
+
   var key = curve.genKeyPair()
   key._importPrivate(priv.privateKey)
   var out = key.sign(hash)

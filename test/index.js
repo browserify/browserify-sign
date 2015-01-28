@@ -25,6 +25,19 @@ var ec = {
   private: fs.readFileSync(__dirname + '/ec.priv'),
   public: fs.readFileSync(__dirname + '/ec.pub')
 }
+var ec224 = {
+  private: fs.readFileSync(__dirname + '/ec.p224.priv'),
+  public: fs.readFileSync(__dirname + '/ec.p224.pub')
+}
+var ec192 = {
+  private: fs.readFileSync(__dirname + '/ec.p192.priv'),
+  public: fs.readFileSync(__dirname + '/ec.p192.pub')
+}
+
+var ec256 = {
+  private: fs.readFileSync(__dirname + '/ec.p256.priv'),
+  public: fs.readFileSync(__dirname + '/ec.p256.pub')
+}
 var ecpass = {
   private: {
     key: fs.readFileSync(__dirname + '/ec.pass.priv'),
@@ -115,6 +128,9 @@ ectestIt(dsa, new Buffer('dsa with 1024 keys'), 'DSA')
 ectestIt(dsa2, new Buffer('dsa with 2048 keys'), 'DSA-SHA1')
 testIt(rsa1024, new Buffer('md5 with 1024 keys'), 'RSA-MD5')
 ectestIt(ec, new Buffer('ecdsa with sha1'), 'ecdsa-with-SHA1')
+ectestIt(ec192, new Buffer('ecdsa with p192 key with sha1'), 'ecdsa-with-SHA1')
+ectestIt(ec224, new Buffer('ecdsa with p224 key with sha1'), 'ecdsa-with-SHA1')
+ectestIt(ec256, new Buffer('ecdsa with p256 key with sha1'), 'ecdsa-with-SHA1')
 testIt(rsa1024, new Buffer('md5 with 1024 keys'), 'RSA-MD5')
 testIt(rsa2028, new Buffer('md5 with 2028 keys'), 'RSA-MD5')
 testIt(nonrsa1024, new Buffer('md5 with 1024 keys non-rsa key'), 'RSA-MD5')
