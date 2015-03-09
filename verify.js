@@ -1,3 +1,4 @@
+'use strict'
 // much of this based on https://github.com/indutny/self-signed/blob/gh-pages/lib/rsa.js
 var parseKeys = require('parse-asn1')
 var elliptic = require('elliptic')
