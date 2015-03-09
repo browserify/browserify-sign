@@ -339,13 +339,13 @@ test('kvector works', function (t) {
 })
 
 test('reject invalid sigs', function (t) {
-  var message = 'a valid message!';
+  var message = 'a valid message!'
   var hash = Buffer.concat([
     new Buffer('302d300d06096086480165030402040500041c', 'hex'),
     crypto.createHash('sha224').update(message).digest()
   ])
   t.test('I create a valid sig', function (t) {
-    t.plan(2);
+    t.plan(2)
     var priv = parseKeys(rsa1024.private)
     var len = priv.modulus.byteLength()
     var pad = [ 0, 1 ]
@@ -365,7 +365,7 @@ test('reject invalid sigs', function (t) {
     t.ok(myCrypto.createVerify('RSA-SHA224').update(message).verify(rsa1024.public, sign), 'I accept it')
   })
   t.test('invalid leading byte', function (t) {
-    t.plan(2);
+    t.plan(2)
     var priv = parseKeys(rsa1024.private)
     var len = priv.modulus.byteLength()
     var pad = [ 0, 2 ]
@@ -385,8 +385,8 @@ test('reject invalid sigs', function (t) {
     t.notOk(myCrypto.createVerify('RSA-SHA224').update(message).verify(rsa1024.public, sign), 'I reject it')
   })
 
- t.test('invalid ending bytes', function (t) {
-    t.plan(2);
+  t.test('invalid ending bytes', function (t) {
+    t.plan(2)
     var priv = parseKeys(rsa1024.private)
     var len = priv.modulus.byteLength()
     var pad = [ 0, 1 ]
@@ -407,7 +407,7 @@ test('reject invalid sigs', function (t) {
   })
 
   t.test('missing f', function (t) {
-    t.plan(2);
+    t.plan(2)
     var priv = parseKeys(rsa1024.private)
     var len = priv.modulus.byteLength()
     var pad = [ 0, 1 ]
@@ -428,7 +428,7 @@ test('reject invalid sigs', function (t) {
   })
 
   t.test('missing f, extra data', function (t) {
-    t.plan(2);
+    t.plan(2)
     var priv = parseKeys(rsa1024.private)
     var len = priv.modulus.byteLength()
     var pad = [ 0, 1 ]
@@ -449,16 +449,16 @@ test('reject invalid sigs', function (t) {
   })
 
   t.test('in suficent fs', function (t) {
-    t.plan(2);
+    t.plan(2)
     var priv = parseKeys(rsa1024.private)
     var len = priv.modulus.byteLength()
     var pad = [ 0, 1 ]
-    var i = 7;
+    var i = 7
     while (i--) {
       pad.push(0xff)
     }
     pad.push(0x00)
-    var i = -1
+    i = -1
     while (++i < hash.length) {
       pad.push(hash[i])
     }
@@ -469,5 +469,4 @@ test('reject invalid sigs', function (t) {
       .verify(rsa1024.public, sign), 'node rejects it')
     t.notOk(myCrypto.createVerify('RSA-SHA224').update(message).verify(rsa1024.public, sign), 'I reject it')
   })
-  
 })

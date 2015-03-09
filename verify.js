@@ -32,7 +32,7 @@ function verify (sig, hash, key) {
 
   sig = new Buffer(sig.fromRed().toArray())
   var out = 0
-  if (padNum<8) {
+  if (padNum < 8) {
     out = 1
   }
   len = Math.min(sig.length, pad.length)
