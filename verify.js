@@ -12,30 +12,38 @@ function verify (sig, hash, key) {
     return dsaVerify(sig, hash, pub)
   }
   var len = pub.modulus.byteLength()
-  var pad = [ 0, 1 ]
-  while (hash.length + pad.length + 1 < len) {
+  var pad = [ 1 ]
+  var padNum = 0
+  while (hash.length + pad.length + 2 < len) {
     pad.push(0xff)
+    padNum++
   }
   pad.push(0x00)
   var i = -1
   while (++i < hash.length) {
     pad.push(hash[i])
   }
-  pad = hash
+  pad = new Buffer(pad)
   var red = BN.mont(pub.modulus)
   sig = new BN(sig).toRed(red)
 
   sig = sig.redPow(new BN(pub.publicExponent))
 
   sig = new Buffer(sig.fromRed().toArray())
-  sig = sig.slice(sig.length - hash.length)
   var out = 0
-  len = sig.length
+  if (padNum<8) {
+    out = 1
+  }
+  len = Math.min(sig.length, pad.length)
+  if (sig.length !== pad.length) {
+    out = 1
+  }
+
   i = -1
   while (++i < len) {
-    out += (sig[i] ^ hash[i])
+    out |= (sig[i] ^ pad[i])
   }
-  return !out
+  return out === 0
 }
 function ecVerify (sig, hash, pub) {
   var curveId = curves[pub.data.algorithm.curve.join('.')]

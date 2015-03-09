@@ -84,7 +84,7 @@ Verify.prototype.update = function update (data, enc) {
 Verify.prototype.verify = function verifyMethod (key, sig, enc) {
   this.end()
   var hash = this._hash.digest()
-  if (typeof sic === 'string')
+  if (typeof sig === 'string')
     sig = new Buffer(sig, enc)
 
   return verify(sig, Buffer.concat([this._tag, hash]), key)

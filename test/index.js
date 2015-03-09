@@ -2,6 +2,9 @@ var test = require('tape')
 var fs = require('fs')
 var priv1024 = fs.readFileSync(__dirname + '/rsa.1024.priv')
 var asn1 = require('parse-asn1/asn1')
+var parseKeys = require('parse-asn1')
+var crt = require('browserify-rsa')
+var crypto = require('crypto')
 var rsa1024 = {
   private: fs.readFileSync(__dirname + '/rsa.1024.priv'),
   public: fs.readFileSync(__dirname + '/rsa.1024.pub')
@@ -333,4 +336,138 @@ test('kvector works', function (t) {
       kvector(vec.algo, vec.r, vec.s, t, vec.key, vec.msg)
     })
   })
+})
+
+test('reject invalid sigs', function (t) {
+  var message = 'a valid message!';
+  var hash = Buffer.concat([
+    new Buffer('302d300d06096086480165030402040500041c', 'hex'),
+    crypto.createHash('sha224').update(message).digest()
+  ])
+  t.test('I create a valid sig', function (t) {
+    t.plan(2);
+    var priv = parseKeys(rsa1024.private)
+    var len = priv.modulus.byteLength()
+    var pad = [ 0, 1 ]
+    while (hash.length + pad.length + 1 < len) {
+      pad.push(0xff)
+    }
+    pad.push(0x00)
+    var i = -1
+    while (++i < hash.length) {
+      pad.push(hash[i])
+    }
+
+    var sign = crt(pad, priv)
+    t.ok(nodeCrypto.createVerify('RSA-SHA224')
+      .update(message)
+      .verify(rsa1024.public, sign), 'node accepts it')
+    t.ok(myCrypto.createVerify('RSA-SHA224').update(message).verify(rsa1024.public, sign), 'I accept it')
+  })
+  t.test('invalid leading byte', function (t) {
+    t.plan(2);
+    var priv = parseKeys(rsa1024.private)
+    var len = priv.modulus.byteLength()
+    var pad = [ 0, 2 ]
+    while (hash.length + pad.length + 1 < len) {
+      pad.push(0xff)
+    }
+    pad.push(0x00)
+    var i = -1
+    while (++i < hash.length) {
+      pad.push(hash[i])
+    }
+
+    var sign = crt(pad, priv)
+    t.notOk(nodeCrypto.createVerify('RSA-SHA224')
+      .update(message)
+      .verify(rsa1024.public, sign), 'node rejects it')
+    t.notOk(myCrypto.createVerify('RSA-SHA224').update(message).verify(rsa1024.public, sign), 'I reject it')
+  })
+
+ t.test('invalid ending bytes', function (t) {
+    t.plan(2);
+    var priv = parseKeys(rsa1024.private)
+    var len = priv.modulus.byteLength()
+    var pad = [ 0, 1 ]
+    while (hash.length + pad.length + 1 < len) {
+      pad.push(0xff)
+    }
+    pad.push(0x02)
+    var i = -1
+    while (++i < hash.length) {
+      pad.push(hash[i])
+    }
+
+    var sign = crt(pad, priv)
+    t.notOk(nodeCrypto.createVerify('RSA-SHA224')
+      .update(message)
+      .verify(rsa1024.public, sign), 'node rejects it')
+    t.notOk(myCrypto.createVerify('RSA-SHA224').update(message).verify(rsa1024.public, sign), 'I reject it')
+  })
+
+  t.test('missing f', function (t) {
+    t.plan(2);
+    var priv = parseKeys(rsa1024.private)
+    var len = priv.modulus.byteLength()
+    var pad = [ 0, 1 ]
+    while (hash.length + pad.length + 2 < len) {
+      pad.push(0xff)
+    }
+    pad.push(0x00)
+    var i = -1
+    while (++i < hash.length) {
+      pad.push(hash[i])
+    }
+
+    var sign = crt(pad, priv)
+    t.notOk(nodeCrypto.createVerify('RSA-SHA224')
+      .update(message)
+      .verify(rsa1024.public, sign), 'node rejects it')
+    t.notOk(myCrypto.createVerify('RSA-SHA224').update(message).verify(rsa1024.public, sign), 'I reject it')
+  })
+
+  t.test('missing f, extra data', function (t) {
+    t.plan(2);
+    var priv = parseKeys(rsa1024.private)
+    var len = priv.modulus.byteLength()
+    var pad = [ 0, 1 ]
+    while (hash.length + pad.length + 2 < len) {
+      pad.push(0xff)
+    }
+    pad.push(0x00)
+    var i = -1
+    while (++i < hash.length) {
+      pad.push(hash[i])
+    }
+    pad.push(0)
+    var sign = crt(pad, priv)
+    t.notOk(nodeCrypto.createVerify('RSA-SHA224')
+      .update(message)
+      .verify(rsa1024.public, sign), 'node rejects it')
+    t.notOk(myCrypto.createVerify('RSA-SHA224').update(message).verify(rsa1024.public, sign), 'I reject it')
+  })
+
+  t.test('in suficent fs', function (t) {
+    t.plan(2);
+    var priv = parseKeys(rsa1024.private)
+    var len = priv.modulus.byteLength()
+    var pad = [ 0, 1 ]
+    var i = 7;
+    while (i--) {
+      pad.push(0xff)
+    }
+    pad.push(0x00)
+    var i = -1
+    while (++i < hash.length) {
+      pad.push(hash[i])
+    }
+    pad.push(0)
+    var sign = crt(pad, priv)
+    t.notOk(nodeCrypto.createVerify('RSA-SHA224')
+      .update(message)
+      .verify(rsa1024.public, sign), 'node rejects it')
+    t.notOk(myCrypto.createVerify('RSA-SHA224').update(message).verify(rsa1024.public, sign), 'I reject it')
+  })
+  
 })
