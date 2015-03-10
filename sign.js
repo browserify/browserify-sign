@@ -7,12 +7,22 @@ var createHmac = require('create-hmac')
 var curves = require('./curves')
 
 module.exports = sign
-function sign (hash, key, hashType) {
+function sign (hash, key, hashType, signType) {
   var priv = parseKeys(key)
   if (priv.curve) {
+    if (signType !== 'ecdsa') {
+      throw new Error('wrong public key type')
+    }
     return ecSign(hash, priv)
   } else if (priv.type === 'dsa') {
     return dsaSign(hash, priv, hashType)
+    if (signType !== 'dsa') {
+      throw new Error('wrong public key type')
+    }
+  } else {
+    if (signType !== 'rsa') {
+      throw new Error('wrong public key type')
+    }
   }
   var len = priv.modulus.byteLength()
   var pad = [ 0, 1 ]

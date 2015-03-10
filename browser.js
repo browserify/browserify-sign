@@ -33,6 +33,7 @@ function Sign (algorithm) {
   this._hashType = data.hash
   this._hash = createHash(data.hash)
   this._tag = data.id
+  this._signType = data.sign
 }
 
 Sign.prototype._write = function _write (data, _, done) {
@@ -50,7 +51,7 @@ Sign.prototype.update = function update (data, enc) {
 Sign.prototype.sign = function signMethod (key, enc) {
   this.end()
   var hash = this._hash.digest()
-  var sig = sign(Buffer.concat([this._tag, hash]), key, this._hashType)
+  var sig = sign(Buffer.concat([this._tag, hash]), key, this._hashType, this._signType)
   if (enc) {
     sig = sig.toString(enc)
   }
@@ -66,6 +67,7 @@ function Verify (algorithm) {
 
   this._hash = createHash(data.hash)
   this._tag = data.id
+  this._signType = data.sign
 }
 
 Verify.prototype._write = function _write (data, _, done) {
@@ -87,5 +89,5 @@ Verify.prototype.verify = function verifyMethod (key, sig, enc) {
   if (typeof sig === 'string')
     sig = new Buffer(sig, enc)
 
-  return verify(sig, Buffer.concat([this._tag, hash]), key)
+  return verify(sig, Buffer.concat([this._tag, hash]), key, this._signType)
 }

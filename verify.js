@@ -5,12 +5,23 @@ var elliptic = require('elliptic')
 var curves = require('./curves')
 var BN = require('bn.js')
 module.exports = verify
-function verify (sig, hash, key) {
+
+function verify (sig, hash, key, signType) {
   var pub = parseKeys(key)
   if (pub.type === 'ec') {
+    if (signType !== 'ecdsa') {
+      throw new Error('wrong public key type')
+    }
     return ecVerify(sig, hash, pub)
   } else if (pub.type === 'dsa') {
+    if (signType !== 'dsa') {
+      throw new Error('wrong public key type')
+    }
     return dsaVerify(sig, hash, pub)
+  } else {
+    if (signType !== 'rsa') {
+      throw new Error('wrong public key type')
+    }
   }
   var len = pub.modulus.byteLength()
   var pad = [ 1 ]
