@@ -50,7 +50,7 @@ function dsaSign (hash, priv, algo) {
   var k
   var H = bits2int(hash, q).mod(q)
   var s = false
-  var kv = getKay(x, q, hash, algo)
+  var kv = getKey(x, q, hash, algo)
   while (s === false) {
     k = makeKey(q, kv, algo)
     r = makeR(g, k, p, q)
@@ -78,8 +78,8 @@ function toDER (r, s) {
   res = res.concat(r, [ 0x02, s.length ], s)
   return new Buffer(res)
 }
-module.exports.getKay = getKay
-function getKay (x, q, hash, algo) {
+module.exports.getKey = getKey
+function getKey (x, q, hash, algo) {
   x = new Buffer(x.toArray())
   if (x.length < q.byteLength()) {
     var zeros = new Buffer(q.byteLength() - x.length)
