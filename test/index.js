@@ -12,8 +12,19 @@ function isNode10 () {
 var nodeCrypto = require('crypto')
 var myCrypto = require('../browser')
 function testIt (keys, message, scheme) {
-  var pub = keys.public
-  var priv = keys.private
+  var pub = new Buffer(keys.public, 'base64')
+  var priv
+
+  if (typeof keys.private === "string") {
+   priv = new Buffer(keys.private, 'base64')
+
+  } else {
+    priv = {
+      key: new Buffer(keys.private.key, 'base64'),
+      passphrase: keys.private.passphrase
+    }
+  }
+
   test(message.toString(), function (t) {
     t.plan(4)
     var mySign = myCrypto.createSign(scheme)
@@ -29,8 +40,19 @@ function testIt (keys, message, scheme) {
   })
 }
 function ectestIt (keys, message, scheme) {
-  var pub = keys.public
-  var priv = keys.private
+  var pub = new Buffer(keys.public, 'base64')
+  var priv
+
+  if (typeof keys.private === "string") {
+   priv = new Buffer(keys.private, 'base64')
+
+  } else {
+    priv = {
+      key: new Buffer(keys.private.key, 'base64'),
+      passphrase: keys.private.passphrase
+    }
+  }
+
   test(message.toString(), function (t) {
     t.plan(3)
 
@@ -100,13 +122,6 @@ if (!isNode10()) {
   testIt(fixtures.pass1024, new Buffer('sha512 with 1024 keys and password'), 'RSA-SHA512')
   testIt(fixtures.pass1024, new Buffer('rmd160 with 1024 keys and password'), 'RSA-RIPEMD160')
   testIt(fixtures.pass1024, new Buffer('md5 with 1024 keys and password'), 'RSA-MD5')
-}
-function kvector (algo, r, s, t, key, msg) {
-  t.plan(2)
-  var sig = myCrypto.createSign(algo).update(msg).sign(key)
-  var rs = asn1.signature.decode(sig, 'der')
-  t.equals(rs.r.toString(16), r.toLowerCase(), 'r')
-  t.equals(rs.s.toString(16), s.toLowerCase(), 's')
 }
 var vectors = [
   {
@@ -250,10 +265,18 @@ var vectors = [
     msg: 'test'
   }
 ]
+
+
 test('kvector works', function (t) {
   vectors.forEach(function (vec) {
     t.test('algo: ' + vec.algo + ' key len: ' + vec.key.length + ' msg: ' + vec.msg, function (t) {
-      kvector(vec.algo, vec.r, vec.s, t, vec.key, vec.msg)
+      var key = new Buffer(vec.key, 'base64')
+
+      t.plan(2)
+      var sig = myCrypto.createSign(vec.algo).update(vec.msg).sign(key)
+      var rs = asn1.signature.decode(sig, 'der')
+      t.equals(rs.r.toString(16), vec.r.toLowerCase(), 'r')
+      t.equals(rs.s.toString(16), vec.s.toLowerCase(), 's')
     })
   })
 })
@@ -266,7 +289,7 @@ test('reject invalid sigs', function (t) {
   ])
   t.test('I create a valid sig', function (t) {
     t.plan(2)
-    var priv = parseKeys(fixtures.rsa1024.private)
+    var priv = parseKeys(new Buffer(fixtures.rsa1024.private, 'base64'))
     var len = priv.modulus.byteLength()
     var pad = [ 0, 1 ]
     while (hash.length + pad.length + 1 < len) {
@@ -281,12 +304,12 @@ test('reject invalid sigs', function (t) {
     var sign = crt(pad, priv)
     t.ok(nodeCrypto.createVerify('RSA-SHA224')
       .update(message)
-      .verify(fixtures.rsa1024.public, sign), 'node accepts it')
-    t.ok(myCrypto.createVerify('RSA-SHA224').update(message).verify(fixtures.rsa1024.public, sign), 'I accept it')
+      .verify(new Buffer(fixtures.rsa1024.public, 'base64'), sign), 'node accepts it')
+    t.ok(myCrypto.createVerify('RSA-SHA224').update(message).verify(new Buffer(fixtures.rsa1024.public, 'base64'), sign), 'I accept it')
   })
   t.test('invalid leading byte', function (t) {
     t.plan(2)
-    var priv = parseKeys(fixtures.rsa1024.private)
+    var priv = parseKeys(new Buffer(fixtures.rsa1024.private, 'base64'))
     var len = priv.modulus.byteLength()
     var pad = [ 0, 2 ]
     while (hash.length + pad.length + 1 < len) {
@@ -301,13 +324,13 @@ test('reject invalid sigs', function (t) {
     var sign = crt(pad, priv)
     t.notOk(nodeCrypto.createVerify('RSA-SHA224')
       .update(message)
-      .verify(fixtures.rsa1024.public, sign), 'node rejects it')
-    t.notOk(myCrypto.createVerify('RSA-SHA224').update(message).verify(fixtures.rsa1024.public, sign), 'I reject it')
+      .verify(new Buffer(fixtures.rsa1024.public, 'base64'), sign), 'node rejects it')
+    t.notOk(myCrypto.createVerify('RSA-SHA224').update(message).verify(new Buffer(fixtures.rsa1024.public, 'base64'), sign), 'I reject it')
   })
 
   t.test('invalid ending bytes', function (t) {
     t.plan(2)
-    var priv = parseKeys(fixtures.rsa1024.private)
+    var priv = parseKeys(new Buffer(fixtures.rsa1024.private, 'base64'))
     var len = priv.modulus.byteLength()
     var pad = [ 0, 1 ]
     while (hash.length + pad.length + 1 < len) {
@@ -322,13 +345,13 @@ test('reject invalid sigs', function (t) {
     var sign = crt(pad, priv)
     t.notOk(nodeCrypto.createVerify('RSA-SHA224')
       .update(message)
-      .verify(fixtures.rsa1024.public, sign), 'node rejects it')
-    t.notOk(myCrypto.createVerify('RSA-SHA224').update(message).verify(fixtures.rsa1024.public, sign), 'I reject it')
+      .verify(new Buffer(fixtures.rsa1024.public, 'base64'), sign), 'node rejects it')
+    t.notOk(myCrypto.createVerify('RSA-SHA224').update(message).verify(new Buffer(fixtures.rsa1024.public, 'base64'), sign), 'I reject it')
   })
 
   t.test('missing f', function (t) {
     t.plan(2)
-    var priv = parseKeys(fixtures.rsa1024.private)
+    var priv = parseKeys(new Buffer(fixtures.rsa1024.private, 'base64'))
     var len = priv.modulus.byteLength()
     var pad = [ 0, 1 ]
     while (hash.length + pad.length + 2 < len) {
@@ -343,13 +366,13 @@ test('reject invalid sigs', function (t) {
     var sign = crt(pad, priv)
     t.notOk(nodeCrypto.createVerify('RSA-SHA224')
       .update(message)
-      .verify(fixtures.rsa1024.public, sign), 'node rejects it')
-    t.notOk(myCrypto.createVerify('RSA-SHA224').update(message).verify(fixtures.rsa1024.public, sign), 'I reject it')
+      .verify(new Buffer(fixtures.rsa1024.public, 'base64'), sign), 'node rejects it')
+    t.notOk(myCrypto.createVerify('RSA-SHA224').update(message).verify(new Buffer(fixtures.rsa1024.public, 'base64'), sign), 'I reject it')
   })
 
   t.test('missing f, extra data', function (t) {
     t.plan(2)
-    var priv = parseKeys(fixtures.rsa1024.private)
+    var priv = parseKeys(new Buffer(fixtures.rsa1024.private, 'base64'))
     var len = priv.modulus.byteLength()
     var pad = [ 0, 1 ]
     while (hash.length + pad.length + 2 < len) {
@@ -364,13 +387,13 @@ test('reject invalid sigs', function (t) {
     var sign = crt(pad, priv)
     t.notOk(nodeCrypto.createVerify('RSA-SHA224')
       .update(message)
-      .verify(fixtures.rsa1024.public, sign), 'node rejects it')
-    t.notOk(myCrypto.createVerify('RSA-SHA224').update(message).verify(fixtures.rsa1024.public, sign), 'I reject it')
+      .verify(new Buffer(fixtures.rsa1024.public, 'base64'), sign), 'node rejects it')
+    t.notOk(myCrypto.createVerify('RSA-SHA224').update(message).verify(new Buffer(fixtures.rsa1024.public, 'base64'), sign), 'I reject it')
   })
 
   t.test('in suficent fs', function (t) {
     t.plan(2)
-    var priv = parseKeys(fixtures.rsa1024.private)
+    var priv = parseKeys(new Buffer(fixtures.rsa1024.private, 'base64'))
     var len = priv.modulus.byteLength()
     var pad = [ 0, 1 ]
     var i = 7
@@ -386,7 +409,7 @@ test('reject invalid sigs', function (t) {
     var sign = crt(pad, priv)
     t.notOk(nodeCrypto.createVerify('RSA-SHA224')
       .update(message)
-      .verify(fixtures.rsa1024.public, sign), 'node rejects it')
-    t.notOk(myCrypto.createVerify('RSA-SHA224').update(message).verify(fixtures.rsa1024.public, sign), 'I reject it')
+      .verify(new Buffer(fixtures.rsa1024.public, 'base64'), sign), 'node rejects it')
+    t.notOk(myCrypto.createVerify('RSA-SHA224').update(message).verify(new Buffer(fixtures.rsa1024.public, 'base64'), sign), 'I reject it')
   })
 })
