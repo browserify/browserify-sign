@@ -1,10 +1,9 @@
-var test = require('tape')
-var fs = require('fs')
 var asn1 = require('parse-asn1/asn1')
-var parseKeys = require('parse-asn1')
 var crt = require('browserify-rsa')
 var crypto = require('crypto')
 var fixtures = require('./fixtures')
+var parseKeys = require('parse-asn1')
+var test = require('tape')
 
 function isNode10 () {
   return process.version && process.version.split('.').length === 3 && parseInt(process.version.split('.')[1], 10) <= 10
