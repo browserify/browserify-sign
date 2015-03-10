@@ -6,7 +6,6 @@ var crt = require('browserify-rsa')
 var crypto = require('crypto')
 var fixtures = require('./fixtures')
 
-
 function isNode10 () {
   return process.version && process.version.split('.').length === 3 && parseInt(process.version.split('.')[1], 10) <= 10
 }
