@@ -11,7 +11,7 @@ function isNode10 () {
   return process.version && process.version.split('.').length === 3 && parseInt(process.version.split('.')[1], 10) <= 10
 }
 
-fixtures.valid.rsa.forEach(function(f) {
+fixtures.valid.rsa.forEach(function (f) {
   var message = new Buffer(f.message)
   var pub = new Buffer(f.public, 'base64')
   var priv
@@ -24,6 +24,9 @@ fixtures.valid.rsa.forEach(function(f) {
   } else {
     priv = new Buffer(f.private, 'base64')
   }
+
+  // skip passphrase tests in node 10
+  if (f.passphrase && isNode10()) return
 
   test(f.message, function (t) {
     t.plan(5)
@@ -44,7 +47,7 @@ fixtures.valid.rsa.forEach(function(f) {
   })
 })
 
-fixtures.valid.ec.forEach(function(f) {
+fixtures.valid.ec.forEach(function (f) {
   var message = new Buffer(f.message)
   var pub = new Buffer(f.public, 'base64')
   var priv
@@ -58,8 +61,8 @@ fixtures.valid.ec.forEach(function(f) {
     priv = new Buffer(f.private, 'base64')
   }
 
-  // skip node 10 tests
-  if (f.node11 && isNode10()) return
+  // skip passphrase tests in node 10
+  if (f.passphrase && isNode10()) return
 
   test(f.message, function (t) {
     t.plan(4)
@@ -79,7 +82,7 @@ fixtures.valid.ec.forEach(function(f) {
   })
 })
 
-fixtures.valid.kvectors.forEach(function(f) {
+fixtures.valid.kvectors.forEach(function (f) {
   test('kvector algo: ' + f.algo + ' key len: ' + f.key.length + ' msg: ' + f.msg, function (t) {
     var key = new Buffer(f.key, 'base64')
 
@@ -91,7 +94,7 @@ fixtures.valid.kvectors.forEach(function(f) {
   })
 })
 
-fixtures.invalid.verify.forEach(function(f) {
+fixtures.invalid.verify.forEach(function (f) {
   test(f.description, function (t) {
     t.plan(2)
 
