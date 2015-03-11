@@ -8,7 +8,7 @@ var parseKeys = require('parse-asn1')
 var test = require('tape')
 
 function isNode10 () {
-  return process.version && process.version.split('.').length === 3 && parseInt(process.version.split('.')[1], 10) <= 10
+  return process.version && process.version.split('.').length === 3 && parseInt(process.version.split('.')[0].slice(1), 10) < 1 && parseInt(process.version.split('.')[1], 10) <= 10
 }
 
 fixtures.valid.rsa.forEach(function (f) {
