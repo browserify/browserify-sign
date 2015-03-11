@@ -25,7 +25,7 @@ fixtures.valid.rsa.forEach(function(f) {
     priv = new Buffer(f.private, 'base64')
   }
 
-  test(message.toString(), function (t) {
+  test(f.message, function (t) {
     t.plan(5)
 
     var mySign = myCrypto.createSign(f.scheme)
@@ -61,8 +61,8 @@ fixtures.valid.ec.forEach(function(f) {
   // skip node 10 tests
   if (f.node11 && isNode10()) return
 
-  test(message.toString(), function (t) {
-    t.plan(3)
+  test(f.message, function (t) {
+    t.plan(4)
 
     var nodeSign = nodeCrypto.createSign(f.scheme)
     var mySign = myCrypto.createSign(f.scheme)
@@ -70,9 +70,7 @@ fixtures.valid.ec.forEach(function(f) {
     var mySig = mySign.update(message).sign(priv)
     var nodeSig = nodeSign.update(message).sign(priv)
     t.notEqual(mySig.toString('hex'), nodeSig.toString('hex'), 'not equal sigs')
-
-    // FIXME: deterministic signatures?
-//    t.equals(mySig.toString('hex'), f.signature)
+    t.equals(mySig.toString('hex'), f.signature)
 
     var myVer = myCrypto.createVerify(f.scheme)
     var nodeVer = nodeCrypto.createVerify(f.scheme)
