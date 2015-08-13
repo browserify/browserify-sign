@@ -5,7 +5,7 @@
   "main": "index.js",
   "browser": "browser.js",
   "scripts": {
-    "unit": "node test/index.js | tspec"
+    "unit": "node test/index.js | tspec",
     "standard": "standard",
     "test": "npm run standard && npm run unit"
   },
