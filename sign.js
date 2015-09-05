@@ -51,44 +51,46 @@ function ecSign (hash, priv) {
   return new Buffer(out.toDER())
 }
 
-// function dsaSign (hash, priv, algo) {
-//   var x = priv.params.priv_key
-//   var p = priv.params.p
-//   var q = priv.params.q
-//   var g = priv.params.g
-//   var r = new BN(0)
-//   var k
-//   var H = bits2int(hash, q).mod(q)
-//   var s = false
-//   var kv = getKey(x, q, hash, algo)
-//   while (s === false) {
-//     k = makeKey(q, kv, algo)
-//     r = makeR(g, k, p, q)
-//     s = k.invm(q).imul(H.add(x.mul(r))).mod(q)
-//     if (!s.cmpn(0)) {
-//       s = false
-//       r = new BN(0)
-//     }
-//   }
-//   return toDER(r, s)
-// }
+function dsaSign (hash, priv, algo) {
+  var x = priv.params.priv_key
+  var p = priv.params.p
+  var q = priv.params.q
+  var g = priv.params.g
+  var r = new BN(0)
+  var k
+  var H = bits2int(hash, q).mod(q)
+  var s = false
+  var kv = getKey(x, q, hash, algo)
+  while (s === false) {
+    k = makeKey(q, kv, algo)
+    r = makeR(g, k, p, q)
+    s = k.invm(q).imul(H.add(x.mul(r))).mod(q)
+    if (!s.cmpn(0)) {
+      s = false
+      r = new BN(0)
+    }
+  }
+  return toDER(r, s)
+}
 
-// function toDER (r, s) {
-//   r = r.toArray()
-//   s = s.toArray()
-//
-//   // Pad values
-//   if (r[0] & 0x80)
-//     r = [ 0 ].concat(r)
-//   // Pad values
-//   if (s[0] & 0x80)
-//     s = [0].concat(s)
-//
-//   var total = r.length + s.length + 4
-//   var res = [ 0x30, total, 0x02, r.length ]
-//   res = res.concat(r, [ 0x02, s.length ], s)
-//   return new Buffer(res)
-// }
+function toDER (r, s) {
+  r = r.toArray()
+  s = s.toArray()
+
+  // Pad values
+  if (r[0] & 0x80) {
+    r = [ 0 ].concat(r)
+  }
+  // Pad values
+  if (s[0] & 0x80) {
+    s = [0].concat(s)
+  }
+
+  var total = r.length + s.length + 4
+  var res = [ 0x30, total, 0x02, r.length ]
+  res = res.concat(r, [ 0x02, s.length ], s)
+  return new Buffer(res)
+}
 
 function getKey (x, q, hash, algo) {
   x = new Buffer(x.toArray())
@@ -174,9 +176,9 @@ function makeKey (q, kv, algo) {
   return k
 }
 
-// function makeR (g, k, p, q) {
-//   return g.toRed(BN.mont(p)).redPow(k).fromRed().mod(q)
-// }
+function makeR (g, k, p, q) {
+  return g.toRed(BN.mont(p)).redPow(k).fromRed().mod(q)
+}
 
 module.exports = sign
 module.exports.getKey = getKey
