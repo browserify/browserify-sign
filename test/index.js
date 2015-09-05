@@ -1,10 +1,7 @@
 var asn1 = require('parse-asn1/asn1')
-var crt = require('browserify-rsa')
-var crypto = require('crypto')
 var fixtures = require('./fixtures')
 var myCrypto = require('../browser')
 var nodeCrypto = require('crypto')
-var parseKeys = require('parse-asn1')
 var test = require('tape')
 
 function isNode10 () {
