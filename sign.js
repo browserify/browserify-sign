@@ -15,10 +15,10 @@ function sign (hash, key, hashType, signType) {
     }
     return ecSign(hash, priv)
   } else if (priv.type === 'dsa') {
-    return dsaSign(hash, priv, hashType)
     if (signType !== 'dsa') {
       throw new Error('wrong private key type')
     }
+    return dsaSign(hash, priv, hashType)
   } else {
     if (signType !== 'rsa') {
       throw new Error('wrong private key type')
