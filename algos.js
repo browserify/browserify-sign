@@ -29,6 +29,31 @@ exports['ecdsa-with-SHA1'] = {
   hash: 'sha1',
   id: new Buffer('', 'hex')
 }
+
+exports['ecdsa-with-SHA224'] = {
+  sign: 'ecdsa',
+  hash: 'sha224',
+  id: new Buffer('', 'hex')
+}
+
+exports['ecdsa-with-SHA256'] = {
+  sign: 'ecdsa',
+  hash: 'sha256',
+  id: new Buffer('', 'hex')
+}
+
+exports['ecdsa-with-SHA384'] = {
+  sign: 'ecdsa',
+  hash: 'sha384',
+  id: new Buffer('', 'hex')
+}
+
+exports['ecdsa-with-SHA512'] = {
+  sign: 'ecdsa',
+  hash: 'sha512',
+  id: new Buffer('', 'hex')
+}
+
 exports.DSA = exports['DSA-SHA1'] = exports['DSA-SHA'] = {
   sign: 'dsa',
   hash: 'sha1',
