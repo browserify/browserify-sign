@@ -16,13 +16,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "bn.js": "^2.0.0",
-    "browserify-rsa": "^2.0.0",
+    "bn.js": "^4.1.1",
+    "browserify-rsa": "^4.0.0",
     "create-hash": "^1.1.0",
     "create-hmac": "^1.1.2",
-    "elliptic": "^3.0.0",
+    "elliptic": "^6.0.0",
     "inherits": "^2.0.1",
-    "parse-asn1": "^3.0.0"
+    "parse-asn1": "^5.0.0"
   },
   "devDependencies": {
     "tap-spec": "^1.0.1",
