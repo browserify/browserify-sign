@@ -1,17 +1,20 @@
 var asn1 = require('parse-asn1/asn1')
+var tape = require('tape')
+var nCrypto = require('crypto')
+var bCrypto = require('../browser')
 var fixtures = require('./fixtures')
-var myCrypto = require('../browser')
-var nodeCrypto = require('crypto')
-var test = require('tape')
 
 function isNode10 () {
-  return process.version && process.version.split('.').length === 3 && parseInt(process.version.split('.')[0].slice(1), 10) < 1 && parseInt(process.version.split('.')[1], 10) <= 10
+  return parseInt(process.version.split('.')[1], 10) <= 10
 }
 
 fixtures.valid.rsa.forEach(function (f) {
   var message = new Buffer(f.message)
   var pub = new Buffer(f.public, 'base64')
   var priv
+
+  // skip passphrase tests in node 10
+  if (f.passphrase && isNode10()) return
 
   if (f.passphrase) {
     priv = {
@@ -22,29 +25,23 @@ fixtures.valid.rsa.forEach(function (f) {
     priv = new Buffer(f.private, 'base64')
   }
 
-  // skip passphrase tests in node 10
-  if (f.passphrase && isNode10()) return
+  tape.test(f.message, function (t) {
+    var bSign = bCrypto.createSign(f.scheme)
+    var nSign = nCrypto.createSign(f.scheme)
+    var bSig = bSign.update(message).sign(priv)
+    var nSig = nSign.update(message).sign(priv)
 
-  test(f.message, function (t) {
-    t.plan(7)
+    t.equals(bSig.length, nSig.length, 'correct length')
+    t.equals(bSig.toString('hex'), nSig.toString('hex'), 'equal sigs')
+    t.equals(bSig.toString('hex'), f.signature, 'compare to known')
 
-    var mySign = myCrypto.createSign(f.scheme)
-    var nodeSign = nodeCrypto.createSign(f.scheme)
-    var mySig = mySign.update(message).sign(priv)
-    var nodeSig = nodeSign.update(message).sign(priv)
+    t.ok(nCrypto.createVerify(f.scheme).update(message).verify(pub, nSig), 'node validate node sig')
+    t.ok(nCrypto.createVerify(f.scheme).update(message).verify(pub, bSig), 'node validate browser sig')
 
-    t.equals(mySig.length, nodeSig.length, 'correct length')
-    t.equals(mySig.toString('hex'), nodeSig.toString('hex'), 'equal sigs')
-    t.equals(mySig.toString('hex'), f.signature, 'compare to known')
+    t.ok(bCrypto.createVerify(f.scheme).update(message).verify(pub, nSig), 'browser validate node sig')
+    t.ok(bCrypto.createVerify(f.scheme).update(message).verify(pub, bSig), 'browser validate browser sig')
 
-    var myVer = myCrypto.createVerify(f.scheme)
-    var nodeVer = nodeCrypto.createVerify(f.scheme)
-    t.ok(nodeVer.update(message).verify(pub, mySig), 'node validate my sig')
-    t.ok(myVer.update(message).verify(pub, nodeSig), 'me validate node sig')
-    myVer = myCrypto.createVerify(f.scheme)
-    nodeVer = nodeCrypto.createVerify(f.scheme)
-    t.ok(nodeVer.update(message).verify(pub, nodeSig), 'node validate node sig')
-    t.ok(myVer.update(message).verify(pub, mySig), 'me validate my sig')
+    t.end()
   })
 })
 
@@ -53,6 +50,9 @@ fixtures.valid.ec.forEach(function (f) {
   var pub = new Buffer(f.public, 'base64')
   var priv
 
+  // skip passphrase tests in node 10
+  if (f.passphrase && isNode10()) return
+
   if (f.passphrase) {
     priv = {
       key: new Buffer(f.private, 'base64'),
@@ -62,53 +62,50 @@ fixtures.valid.ec.forEach(function (f) {
     priv = new Buffer(f.private, 'base64')
   }
 
-  // skip passphrase tests in node 10
-  if (f.passphrase && isNode10()) return
+  tape.test(f.message, function (t) {
+    var nSign = nCrypto.createSign(f.scheme)
+    var bSign = bCrypto.createSign(f.scheme)
 
-  test(f.message, function (t) {
-    t.plan(4)
+    var bSig = bSign.update(message).sign(priv)
+    var nSig = nSign.update(message).sign(priv)
+    t.notEqual(bSig.toString('hex'), nSig.toString('hex'), 'not equal sigs')
+    t.equals(bSig.toString('hex'), f.signature)
 
-    var nodeSign = nodeCrypto.createSign(f.scheme)
-    var mySign = myCrypto.createSign(f.scheme)
+    var nVer = nCrypto.createVerify(f.scheme)
+    t.ok(nVer.update(message).verify(pub, bSig), 'node validate browser sig')
 
-    var mySig = mySign.update(message).sign(priv)
-    var nodeSig = nodeSign.update(message).sign(priv)
-    t.notEqual(mySig.toString('hex'), nodeSig.toString('hex'), 'not equal sigs')
-    t.equals(mySig.toString('hex'), f.signature)
+    var bVer = bCrypto.createVerify(f.scheme)
+    t.ok(bVer.update(message).verify(pub, nSig), 'browser validate node sig')
 
-    var myVer = myCrypto.createVerify(f.scheme)
-    var nodeVer = nodeCrypto.createVerify(f.scheme)
-    t.ok(nodeVer.update(message).verify(pub, mySig), 'node validate my sig')
-    t.ok(myVer.update(message).verify(pub, nodeSig), 'me validate node sig')
+    t.end()
   })
 })
 
 fixtures.valid.kvectors.forEach(function (f) {
-  test('kvector algo: ' + f.algo + ' key len: ' + f.key.length + ' msg: ' + f.msg, function (t) {
+  tape.test('kvector algo: ' + f.algo + ' key len: ' + f.key.length + ' msg: ' + f.msg, function (t) {
     var key = new Buffer(f.key, 'base64')
 
-    t.plan(2)
-    var sig = myCrypto.createSign(f.algo).update(f.msg).sign(key)
-    var rs = asn1.signature.decode(sig, 'der')
-    t.equals(rs.r.toString(16), f.r.toLowerCase(), 'r')
-    t.equals(rs.s.toString(16), f.s.toLowerCase(), 's')
+    var bSig = bCrypto.createSign(f.algo).update(f.msg).sign(key)
+    var bRS = asn1.signature.decode(bSig, 'der')
+    t.equals(bRS.r.toString(16), f.r.toLowerCase(), 'r')
+    t.equals(bRS.s.toString(16), f.s.toLowerCase(), 's')
+
+    t.end()
   })
 })
 
 fixtures.invalid.verify.forEach(function (f) {
-  test(f.description, function (t) {
-    t.plan(2)
-
+  tape.test(f.description, function (t) {
     var sign = new Buffer(f.signature, 'hex')
     var pub = new Buffer(f.public, 'base64')
     var message = new Buffer(f.message)
 
-    t.notOk(nodeCrypto.createVerify(f.scheme)
-      .update(message)
-      .verify(pub, sign), 'node rejects it')
+    var nVerify = nCrypto.createVerify(f.scheme).update(message).verify(pub, sign)
+    t.notOk(nVerify, 'node rejects it')
 
-    t.notOk(myCrypto.createVerify(f.scheme)
-      .update(message)
-      .verify(pub, sign), 'We reject it')
+    var bVerify = bCrypto.createVerify(f.scheme).update(message).verify(pub, sign)
+    t.notOk(bVerify, 'We reject it')
+
+    t.end()
   })
 })
