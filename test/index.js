@@ -2,7 +2,7 @@ var asn1 = require('parse-asn1/asn1')
 var test = require('tape').test
 var nCrypto = require('crypto')
 var bCrypto = require('../browser')
-var fixtures = require('./fixtures2')
+var fixtures = require('./fixtures')
 
 function isNode10 () {
   return parseInt(process.version.split('.')[1], 10) <= 10
