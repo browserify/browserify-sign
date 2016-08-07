@@ -69,7 +69,7 @@ fixtures.valid.ec.forEach(function (f) {
     var bSig = bSign.update(message).sign(priv)
     var nSig = nSign.update(message).sign(priv)
     t.notEqual(bSig.toString('hex'), nSig.toString('hex'), 'not equal sigs')
-    t.equals(bSig.toString('hex'), f.signature)
+    t.equals(bSig.toString('hex'), f.signature, 'sig is determanistic')
 
     var nVer = nCrypto.createVerify(f.scheme)
     t.ok(nVer.update(message).verify(pub, bSig), 'node validate browser sig')
