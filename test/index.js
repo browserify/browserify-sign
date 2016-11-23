@@ -63,6 +63,7 @@ fixtures.valid.ec.forEach(function (f) {
   }
 
   test(f.message, function (t) {
+    console.log(f.scheme)
     var nSign = nCrypto.createSign(f.scheme)
     var bSign = bCrypto.createSign(f.scheme)
 
@@ -79,6 +80,27 @@ fixtures.valid.ec.forEach(function (f) {
 
     t.end()
   })
+  if (f.scheme !== 'DSA' && f.scheme.toLowerCase().indexOf('dsa') === -1) {
+    test(f.message + ' named rsa through', function (t) {
+      var scheme = 'RSA-' + f.scheme.toUpperCase()
+      console.log(scheme)
+      var nSign = nCrypto.createSign(scheme)
+      var bSign = bCrypto.createSign(scheme)
+
+      var bSig = bSign.update(message).sign(priv)
+      var nSig = nSign.update(message).sign(priv)
+      t.notEqual(bSig.toString('hex'), nSig.toString('hex'), 'not equal sigs')
+      t.equals(bSig.toString('hex'), f.signature, 'sig is determanistic')
+
+      var nVer = nCrypto.createVerify(f.scheme)
+      t.ok(nVer.update(message).verify(pub, bSig), 'node validate browser sig')
+
+      var bVer = bCrypto.createVerify(f.scheme)
+      t.ok(bVer.update(message).verify(pub, nSig), 'browser validate node sig')
+
+      t.end()
+    })
+  }
 })
 
 fixtures.valid.kvectors.forEach(function (f) {
