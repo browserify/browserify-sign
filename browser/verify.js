@@ -7,6 +7,7 @@ var curves = require('./curves.json')
 function verify (sig, hash, key, signType, tag) {
   var pub = parseKeys(key)
   if (pub.type === 'ec') {
+    // rsa keys can be interpreted as ecdsa ones in openssl
     if (signType !== 'ecdsa' && signType !== 'ecdsa/rsa') throw new Error('wrong public key type')
     return ecVerify(sig, hash, pub)
   } else if (pub.type === 'dsa') {

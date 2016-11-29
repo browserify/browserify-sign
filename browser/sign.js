@@ -9,6 +9,7 @@ var curves = require('./curves.json')
 function sign (hash, key, hashType, signType, tag) {
   var priv = parseKeys(key)
   if (priv.curve) {
+    // rsa keys can be interpreted as ecdsa ones in openssl
     if (signType !== 'ecdsa' && signType !== 'ecdsa/rsa') throw new Error('wrong private key type')
     return ecSign(hash, priv)
   } else if (priv.type === 'dsa') {

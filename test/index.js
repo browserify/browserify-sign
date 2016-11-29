@@ -63,7 +63,6 @@ fixtures.valid.ec.forEach(function (f) {
   }
 
   test(f.message, function (t) {
-    console.log(f.scheme)
     var nSign = nCrypto.createSign(f.scheme)
     var bSign = bCrypto.createSign(f.scheme)
 
@@ -83,7 +82,6 @@ fixtures.valid.ec.forEach(function (f) {
   if (f.scheme !== 'DSA' && f.scheme.toLowerCase().indexOf('dsa') === -1) {
     test(f.message + ' named rsa through', function (t) {
       var scheme = 'RSA-' + f.scheme.toUpperCase()
-      console.log(scheme)
       var nSign = nCrypto.createSign(scheme)
       var bSign = bCrypto.createSign(scheme)
 
