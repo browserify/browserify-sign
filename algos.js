@@ -1,1 +1,1 @@
-module.exports = require('./browser/algorithms');
+module.exports = require('./browser/algorithms')
