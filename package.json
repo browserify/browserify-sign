@@ -8,7 +8,8 @@
   "license": "ISC",
   "files": [
     "browser",
-    "index.js"
+    "index.js",
+    "algos.js"
   ],
   "main": "index.js",
   "repository": {
