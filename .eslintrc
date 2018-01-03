@@ -33,12 +33,17 @@
 			"files": "browser/sign.js",
 			"rules": {
 				"max-params": "off",
-				// "max-statements": "off",
 				"max-statements-per-line": "off",
 				"no-param-reassign": "warn",
 				"no-plusplus": "warn",
 				"no-use-before-define": "warn",
 			}
+		},
+		{
+			"files": "test/*.js",
+			"rules": {
+				"max-lines-per-function": "off",
+			},
 		},
 	],
 }
