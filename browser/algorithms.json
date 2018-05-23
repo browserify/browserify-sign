@@ -50,22 +50,22 @@
     "id": ""
   },
   "sha256": {
-    "sign": "ecdsa",
+    "sign": "ecdsa/rsa",
     "hash": "sha256",
     "id": ""
   },
   "sha224": {
-    "sign": "ecdsa",
+    "sign": "ecdsa/rsa",
     "hash": "sha224",
     "id": ""
   },
   "sha384": {
-    "sign": "ecdsa",
+    "sign": "ecdsa/rsa",
     "hash": "sha384",
     "id": ""
   },
   "sha512": {
-    "sign": "ecdsa",
+    "sign": "ecdsa/rsa",
     "hash": "sha512",
     "id": ""
   },
