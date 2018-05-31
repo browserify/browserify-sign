@@ -1,4 +1,10 @@
 {
+  "aliases": {
+    "sha224": "RSA-SHA224",
+    "sha256": "RSA-SHA256",
+    "sha384": "RSA-SHA384",
+    "sha512": "RSA-SHA512"
+  },
   "valid": {
     "ec": [
       {

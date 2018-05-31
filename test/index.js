@@ -8,6 +8,10 @@ function isNode10 () {
   return parseInt(process.version.split('.')[1], 10) <= 10
 }
 
+Object.keys(fixtures.aliases).forEach(function (scheme) {
+  fixtures.aliases[fixtures.aliases[scheme]] = scheme
+})
+
 fixtures.valid.rsa.forEach(function (f) {
   var message = new Buffer(f.message)
   var pub = new Buffer(f.public, 'base64')
@@ -25,23 +29,30 @@ fixtures.valid.rsa.forEach(function (f) {
     priv = new Buffer(f.private, 'base64')
   }
 
-  test(f.message, function (t) {
-    var bSign = bCrypto.createSign(f.scheme)
-    var nSign = nCrypto.createSign(f.scheme)
-    var bSig = bSign.update(message).sign(priv)
-    var nSig = nSign.update(message).sign(priv)
+  var schemes = [f.scheme]
+  if (fixtures.aliases[f.scheme]) {
+    schemes.push(fixtures.aliases[f.scheme])
+  }
+  schemes.forEach(function (scheme) {
+    test(f.message + ' (' + scheme + ')', function (t) {
+      var bSign = bCrypto.createSign(scheme)
+      var nSign = nCrypto.createSign(scheme)
+      var bSig = bSign.update(message).sign(priv)
+      var nSig = nSign.update(message).sign(priv)
 
-    t.equals(bSig.length, nSig.length, 'correct length')
-    t.equals(bSig.toString('hex'), nSig.toString('hex'), 'equal sigs')
-    t.equals(bSig.toString('hex'), f.signature, 'compare to known')
+      t.equals(bSig.length, nSig.length, 'correct length')
+      t.equals(bSig.toString('hex'), nSig.toString('hex'), 'equal sigs')
 
-    t.ok(nCrypto.createVerify(f.scheme).update(message).verify(pub, nSig), 'node validate node sig')
-    t.ok(nCrypto.createVerify(f.scheme).update(message).verify(pub, bSig), 'node validate browser sig')
+      t.equals(nSig.toString('hex'), f.signature, 'node compare to known')
+      t.ok(nCrypto.createVerify(scheme).update(message).verify(pub, nSig), 'node validate node sig')
+      t.ok(nCrypto.createVerify(scheme).update(message).verify(pub, bSig), 'node validate browser sig')
 
-    t.ok(bCrypto.createVerify(f.scheme).update(message).verify(pub, nSig), 'browser validate node sig')
-    t.ok(bCrypto.createVerify(f.scheme).update(message).verify(pub, bSig), 'browser validate browser sig')
+      t.equals(bSig.toString('hex'), f.signature, 'browser compare to known')
+      t.ok(bCrypto.createVerify(scheme).update(message).verify(pub, nSig), 'browser validate node sig')
+      t.ok(bCrypto.createVerify(scheme).update(message).verify(pub, bSig), 'browser validate browser sig')
 
-    t.end()
+      t.end()
+    })
   })
 })
 
