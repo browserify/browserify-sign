@@ -3,14 +3,15 @@ var test = require('tape').test
 var nCrypto = require('crypto')
 var bCrypto = require('../browser')
 var fixtures = require('./fixtures')
+var Buffer = require('safe-buffer').Buffer
 
 function isNode10 () {
   return parseInt(process.version.split('.')[1], 10) <= 10
 }
 
 fixtures.valid.rsa.forEach(function (f) {
-  var message = new Buffer(f.message)
-  var pub = new Buffer(f.public, 'base64')
+  var message = Buffer.from(f.message)
+  var pub = Buffer.from(f.public, 'base64')
   var priv
 
   // skip passphrase tests in node 10
@@ -18,11 +19,11 @@ fixtures.valid.rsa.forEach(function (f) {
 
   if (f.passphrase) {
     priv = {
-      key: new Buffer(f.private, 'base64'),
+      key: Buffer.from(f.private, 'base64'),
       passphrase: f.passphrase
     }
   } else {
-    priv = new Buffer(f.private, 'base64')
+    priv = Buffer.from(f.private, 'base64')
   }
 
   test(f.message, function (t) {
@@ -46,8 +47,8 @@ fixtures.valid.rsa.forEach(function (f) {
 })
 
 fixtures.valid.ec.forEach(function (f) {
-  var message = new Buffer(f.message)
-  var pub = new Buffer(f.public, 'base64')
+  var message = Buffer.from(f.message)
+  var pub = Buffer.from(f.public, 'base64')
   var priv
 
   // skip passphrase tests in node 10
@@ -55,11 +56,11 @@ fixtures.valid.ec.forEach(function (f) {
 
   if (f.passphrase) {
     priv = {
-      key: new Buffer(f.private, 'base64'),
+      key: Buffer.from(f.private, 'base64'),
       passphrase: f.passphrase
     }
   } else {
-    priv = new Buffer(f.private, 'base64')
+    priv = Buffer.from(f.private, 'base64')
   }
 
   test(f.message, function (t) {
@@ -103,7 +104,7 @@ fixtures.valid.ec.forEach(function (f) {
 
 fixtures.valid.kvectors.forEach(function (f) {
   test('kvector algo: ' + f.algo + ' key len: ' + f.key.length + ' msg: ' + f.msg, function (t) {
-    var key = new Buffer(f.key, 'base64')
+    var key = Buffer.from(f.key, 'base64')
 
     var bSig = bCrypto.createSign(f.algo).update(f.msg).sign(key)
     var bRS = asn1.signature.decode(bSig, 'der')
@@ -116,9 +117,9 @@ fixtures.valid.kvectors.forEach(function (f) {
 
 fixtures.invalid.verify.forEach(function (f) {
   test(f.description, function (t) {
-    var sign = new Buffer(f.signature, 'hex')
-    var pub = new Buffer(f.public, 'base64')
-    var message = new Buffer(f.message)
+    var sign = Buffer.from(f.signature, 'hex')
+    var pub = Buffer.from(f.public, 'base64')
+    var message = Buffer.from(f.message)
 
     var nVerify = nCrypto.createVerify(f.scheme).update(message).verify(pub, sign)
     t.notOk(nVerify, 'node rejects it')
