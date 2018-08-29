@@ -29,7 +29,8 @@
     "create-hmac": "^1.1.2",
     "elliptic": "^6.0.0",
     "inherits": "^2.0.1",
-    "parse-asn1": "^5.0.0"
+    "parse-asn1": "^5.0.0",
+    "safe-buffer": "^5.1.2"
   },
   "devDependencies": {
     "nyc": "^6.1.1",

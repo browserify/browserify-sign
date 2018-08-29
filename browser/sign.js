@@ -5,6 +5,7 @@ var EC = require('elliptic').ec
 var BN = require('bn.js')
 var parseKeys = require('parse-asn1')
 var curves = require('./curves.json')
+var Buffer = require('safe-buffer').Buffer
 
 function sign (hash, key, hashType, signType, tag) {
   var priv = parseKeys(key)
@@ -38,7 +39,7 @@ function ecSign (hash, priv) {
   var key = curve.keyFromPrivate(priv.privateKey)
   var out = key.sign(hash)
 
-  return new Buffer(out.toDER())
+  return Buffer.from(out.toDER())
 }
 
 function dsaSign (hash, priv, algo) {
@@ -74,25 +75,22 @@ function toDER (r, s) {
   var total = r.length + s.length + 4
   var res = [ 0x30, total, 0x02, r.length ]
   res = res.concat(r, [ 0x02, s.length ], s)
-  return new Buffer(res)
+  return Buffer.from(res)
 }
 
 function getKey (x, q, hash, algo) {
-  x = new Buffer(x.toArray())
+  x = Buffer.from(x.toArray())
   if (x.length < q.byteLength()) {
-    var zeros = new Buffer(q.byteLength() - x.length)
-    zeros.fill(0)
+    var zeros = Buffer.alloc(q.byteLength() - x.length)
     x = Buffer.concat([ zeros, x ])
   }
   var hlen = hash.length
   var hbits = bits2octets(hash, q)
-  var v = new Buffer(hlen)
-  v.fill(1)
-  var k = new Buffer(hlen)
-  k.fill(0)
-  k = createHmac(algo, k).update(v).update(new Buffer([ 0 ])).update(x).update(hbits).digest()
+  var v = Buffer.alloc(hlen, 1)
+  var k = Buffer.alloc(hlen)
+  k = createHmac(algo, k).update(v).update(Buffer.from([ 0 ])).update(x).update(hbits).digest()
   v = createHmac(algo, k).update(v).digest()
-  k = createHmac(algo, k).update(v).update(new Buffer([ 1 ])).update(x).update(hbits).digest()
+  k = createHmac(algo, k).update(v).update(Buffer.from([ 1 ])).update(x).update(hbits).digest()
   v = createHmac(algo, k).update(v).digest()
   return { k: k, v: v }
 }
@@ -107,10 +105,9 @@ function bits2int (obits, q) {
 function bits2octets (bits, q) {
   bits = bits2int(bits, q)
   bits = bits.mod(q)
-  var out = new Buffer(bits.toArray())
+  var out = Buffer.from(bits.toArray())
   if (out.length < q.byteLength()) {
-    var zeros = new Buffer(q.byteLength() - out.length)
-    zeros.fill(0)
+    var zeros = Buffer.alloc(q.byteLength() - out.length)
     out = Buffer.concat([ zeros, out ])
   }
   return out
@@ -129,7 +126,7 @@ function makeKey (q, kv, algo) {
     }
 
     k = bits2int(t, q)
-    kv.k = createHmac(algo, kv.k).update(kv.v).update(new Buffer([ 0 ])).digest()
+    kv.k = createHmac(algo, kv.k).update(kv.v).update(Buffer.from([ 0 ])).digest()
     kv.v = createHmac(algo, kv.k).update(kv.v).digest()
   } while (k.cmp(q) !== -1)
 

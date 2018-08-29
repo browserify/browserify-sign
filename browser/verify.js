@@ -3,6 +3,7 @@ var BN = require('bn.js')
 var EC = require('elliptic').ec
 var parseKeys = require('parse-asn1')
 var curves = require('./curves.json')
+var Buffer = require('safe-buffer').Buffer
 
 function verify (sig, hash, key, signType, tag) {
   var pub = parseKeys(key)
@@ -29,12 +30,12 @@ function verify (sig, hash, key, signType, tag) {
   while (++i < hash.length) {
     pad.push(hash[i])
   }
-  pad = new Buffer(pad)
+  pad = Buffer.from(pad)
   var red = BN.mont(pub.modulus)
   sig = new BN(sig).toRed(red)
 
   sig = sig.redPow(new BN(pub.publicExponent))
-  sig = new Buffer(sig.fromRed().toArray())
+  sig = Buffer.from(sig.fromRed().toArray())
   var out = padNum < 8 ? 1 : 0
   len = Math.min(sig.length, pad.length)
   if (sig.length !== pad.length) out = 1
