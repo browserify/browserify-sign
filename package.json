@@ -23,7 +23,7 @@
     "unit": "tape test/*.js"
   },
   "dependencies": {
-    "bn.js": "^4.1.1",
+    "bn.js": "^5.0.0",
     "browserify-rsa": "^4.0.0",
     "create-hash": "^1.1.0",
     "create-hmac": "^1.1.2",
