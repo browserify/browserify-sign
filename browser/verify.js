@@ -18,7 +18,7 @@ function verify (sig, hash, key, signType, tag) {
   }
   hash = Buffer.concat([tag, hash])
   var len = pub.modulus.byteLength()
-  var pad = [ 1 ]
+  var pad = [1]
   var padNum = 0
   while (hash.length + pad.length + 2 < len) {
     pad.push(0xff)
