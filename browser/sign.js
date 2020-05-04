@@ -1,4 +1,5 @@
 // much of this based on https://github.com/indutny/self-signed/blob/gh-pages/lib/rsa.js
+var Buffer = require('buffer').Buffer
 var createHmac = require('create-hmac')
 var crt = require('browserify-rsa')
 var EC = require('elliptic').ec
@@ -80,16 +81,14 @@ function toDER (r, s) {
 function getKey (x, q, hash, algo) {
   x = Buffer.from(x.toArray())
   if (x.length < q.byteLength()) {
-    var zeros = Buffer.from(q.byteLength() - x.length)
-    zeros.fill(0)
+    var zeros = Buffer.alloc(q.byteLength() - x.length)
     x = Buffer.concat([zeros, x])
   }
   var hlen = hash.length
   var hbits = bits2octets(hash, q)
-  var v = Buffer.from(hlen)
+  var v = Buffer.alloc(hlen)
   v.fill(1)
-  var k = Buffer.from(hlen)
-  k.fill(0)
+  var k = Buffer.alloc(hlen)
   k = createHmac(algo, k).update(v).update(Buffer.from([0])).update(x).update(hbits).digest()
   v = createHmac(algo, k).update(v).digest()
   k = createHmac(algo, k).update(v).update(Buffer.from([1])).update(x).update(hbits).digest()
@@ -109,8 +108,7 @@ function bits2octets (bits, q) {
   bits = bits.mod(q)
   var out = Buffer.from(bits.toArray())
   if (out.length < q.byteLength()) {
-    var zeros = Buffer.from(q.byteLength() - out.length)
-    zeros.fill(0)
+    var zeros = Buffer.alloc(q.byteLength() - out.length)
     out = Buffer.concat([zeros, out])
   }
   return out
@@ -121,7 +119,7 @@ function makeKey (q, kv, algo) {
   var k
 
   do {
-    t = Buffer.from(0)
+    t = Buffer.alloc(0)
 
     while (t.length * 8 < q.bitLength()) {
       kv.v = createHmac(algo, kv.k).update(kv.v).digest()
