@@ -1,5 +1,5 @@
 var createHash = require('create-hash')
-var stream = require('stream')
+var stream = require('readable-stream')
 var inherits = require('inherits')
 var sign = require('./sign')
 var verify = require('./verify')
