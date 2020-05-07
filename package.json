@@ -25,6 +25,7 @@
   "dependencies": {
     "bn.js": "^5.1.1",
     "browserify-rsa": "^4.0.1",
+    "buffer": "^5.6.0",
     "create-hash": "^1.2.0",
     "create-hmac": "^1.1.7",
     "elliptic": "^6.5.2",
