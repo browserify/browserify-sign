@@ -1,5 +1,5 @@
 // much of this based on https://github.com/indutny/self-signed/blob/gh-pages/lib/rsa.js
-var Buffer = require('buffer').Buffer
+var Buffer = require('safe-buffer').Buffer
 var createHmac = require('create-hmac')
 var crt = require('browserify-rsa')
 var EC = require('elliptic').ec

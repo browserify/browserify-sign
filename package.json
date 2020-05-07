@@ -30,7 +30,8 @@
     "elliptic": "^6.5.2",
     "inherits": "^2.0.4",
     "parse-asn1": "^5.1.5",
-    "readable-stream": "^3.6.0"
+    "readable-stream": "^3.6.0",
+    "safe-buffer": "^5.2.0"
   },
   "devDependencies": {
     "nyc": "^15.0.1",

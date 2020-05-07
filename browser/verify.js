@@ -1,5 +1,5 @@
 // much of this based on https://github.com/indutny/self-signed/blob/gh-pages/lib/rsa.js
-var Buffer = require('buffer').Buffer
+var Buffer = require('safe-buffer').Buffer
 var BN = require('bn.js')
 var EC = require('elliptic').ec
 var parseKeys = require('parse-asn1')
