@@ -1,4 +1,4 @@
-var Buffer = require('buffer').Buffer
+var Buffer = require('safe-buffer').Buffer
 var asn1 = require('parse-asn1/asn1')
 var test = require('tape').test
 var nCrypto = require('crypto')

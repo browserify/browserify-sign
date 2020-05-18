@@ -1,4 +1,4 @@
-var Buffer = require('buffer').Buffer
+var Buffer = require('safe-buffer').Buffer
 var createHash = require('create-hash')
 var stream = require('readable-stream')
 var inherits = require('inherits')
