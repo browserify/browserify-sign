@@ -28,7 +28,7 @@ fixtures.valid.rsa.forEach(function (f) {
     priv = Buffer.from(f['private'], 'base64');
   }
 
-  test(f.message, function (t) {
+  (nCrypto.getHashes().indexOf(f.scheme) >= 0 ? test : test.skip)(f.message, function (t) {
     var bSign = bCrypto.createSign(f.scheme);
     var nSign = nCrypto.createSign(f.scheme);
     var bSig = bSign.update(message).sign(priv);
