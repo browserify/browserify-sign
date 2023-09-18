@@ -17,9 +17,8 @@
     "url": "https://github.com/crypto-browserify/browserify-sign.git"
   },
   "scripts": {
-    "coverage": "nyc npm run tests-only",
     "lint": "eslint --ext=js,mjs .",
-    "tests-only": "tape 'test/**/*.js'",
+    "tests-only": "nyc tape 'test/**/*.js'",
     "pretest": "npm run lint",
     "test": "npm run tests-only"
   },
@@ -37,7 +36,7 @@
   "devDependencies": {
     "@ljharb/eslint-config": "^21.1.0",
     "eslint": "^8.8.0",
-    "nyc": "^15.1.0",
+    "nyc": "^10.3.2",
     "tape": "^5.6.6"
   },
   "browser": "browser/index.js"
