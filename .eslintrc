@@ -1,0 +1,44 @@
+{
+	"root": true,
+
+	"extends": "@ljharb",
+
+	"rules": {
+		"func-style": "warn",
+		"indent": ["error", 2],
+		"sort-keys": "off",
+	},
+
+	"overrides": [
+		{
+			"files": "browser/index.js",
+			"rules": {
+				"func-name-matching": "off",
+				"max-statements-per-line": "off",
+				"no-underscore-dangle": "warn",
+			},
+		},
+		{
+			"files": "browser/verify.js",
+			"rules": {
+				"max-params": "off",
+				"max-statements": "off",
+				"max-statements-per-line": "off",
+				"no-param-reassign": "warn",
+				"no-plusplus": "warn",
+				"no-use-before-define": "warn",
+			}
+		},
+		{
+			"files": "browser/sign.js",
+			"rules": {
+				"max-params": "off",
+				// "max-statements": "off",
+				"max-statements-per-line": "off",
+				"no-param-reassign": "warn",
+				"no-plusplus": "warn",
+				"no-use-before-define": "warn",
+			}
+		},
+	],
+}
