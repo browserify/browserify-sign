@@ -65,7 +65,7 @@ fixtures.valid.ec.forEach(function (f) {
     priv = Buffer.from(f['private'], 'base64');
   }
 
-  (nCrypto.getHashes().includes(f.scheme) ? test : test.skip)(f.message, function (t) {
+  (nCrypto.getHashes().indexOf(f.scheme) >= 0 ? test : test.skip)(f.message, function (t) {
     var nSign = nCrypto.createSign(f.scheme);
     var bSign = bCrypto.createSign(f.scheme);
 
