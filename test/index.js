@@ -4,20 +4,14 @@ var Buffer = require('safe-buffer').Buffer;
 var asn1 = require('parse-asn1/asn1');
 var test = require('tape').test;
 var nCrypto = require('crypto');
+var semver = require('semver');
 var bCrypto = require('../browser');
 var fixtures = require('./fixtures');
-
-function isNode10() {
-  return parseInt(process.version.split('.')[1], 10) <= 10;
-}
 
 fixtures.valid.rsa.forEach(function (f) {
   var message = Buffer.from(f.message);
   var pub = Buffer.from(f['public'], 'base64');
   var priv;
-
-  // skip passphrase tests in node 10
-  if (f.passphrase && isNode10()) { return; }
 
   if (f.passphrase) {
     priv = {
@@ -63,13 +57,40 @@ fixtures.valid.rsa.forEach(function (f) {
   });
 });
 
+// node has padding support since 8.0
+// TODO: figure out why node v8.0 - v8.6 is broken
+(semver.satisfies(process.versions.node, '>= 8.6') ? test : test.skip)('padding option', function (t) {
+  var f = fixtures.valid.rsa[0];
+  var message = Buffer.from(f.message);
+  var priv = {
+    key: Buffer.from(f['private'], 'base64'),
+    padding: 11646841 // Some invalid value
+  };
+
+  t.test('invalid padding option', function (st) {
+    var bSign = bCrypto.createSign(f.scheme);
+    var nSign = nCrypto.createSign(f.scheme);
+    st['throws'](
+      function () { bSign.update(message).sign(priv); },
+      /illegal or unsupported padding mode/,
+      'browser throws exception with proper message'
+    );
+    st['throws'](
+      function () { nSign.update(message).sign(priv); },
+      /illegal or unsupported padding mode/,
+      'node throws exception with proper message'
+    );
+
+    st.end();
+  });
+
+  t.end();
+});
+
 fixtures.valid.ec.forEach(function (f) {
   var message = Buffer.from(f.message);
   var pub = Buffer.from(f['public'], 'base64');
   var priv;
-
-  // skip passphrase tests in node 10
-  if (f.passphrase && isNode10()) { return; }
 
   if (f.passphrase) {
     priv = {

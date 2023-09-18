@@ -6,6 +6,7 @@
 	"rules": {
 		"func-style": "warn",
 		"indent": ["error", 2],
+		"multiline-comment-style": "off",
 		"sort-keys": "off",
 	},
 
