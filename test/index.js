@@ -5,6 +5,9 @@ var asn1 = require('parse-asn1/asn1');
 var test = require('tape').test;
 var nCrypto = require('crypto');
 var semver = require('semver');
+var BN = require('bn.js');
+var parseKeys = require('parse-asn1');
+
 var bCrypto = require('../browser');
 var fixtures = require('./fixtures');
 
@@ -154,6 +157,35 @@ fixtures.valid.ec.forEach(function (f) {
       t.end();
     });
   }
+
+  var s = parseKeys(pub).data.q;
+  test(
+    f.message + ' against a fake signature',
+    { skip: !s || '(this test only applies to DSA signatures and not EC signatures, this is ' + f.scheme + ')' },
+    function (t) {
+      var messageBase64 = Buffer.from(f.message, 'base64');
+
+      // forge a fake signature
+      var r = new BN('1');
+
+      try {
+        var fakeSig = asn1.signature.encode({ r: r, s: s }, 'der');
+      } catch (e) {
+        t.ifError(e);
+        t.end();
+        return;
+      }
+
+      var bVer = bCrypto.createVerify(f.scheme);
+      t['throws'](
+        function () { bVer.update(messageBase64).verify(pub, fakeSig); },
+        Error,
+        'fake signature is invalid'
+      );
+
+      t.end();
+    }
+  );
 });
 
 fixtures.valid.kvectors.forEach(function (f) {
