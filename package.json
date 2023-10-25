@@ -1,6 +1,6 @@
 {
 	"name": "browserify-sign",
-	"version": "4.2.1",
+	"version": "4.2.2",
 	"description": "adds node crypto signing for browsers",
 	"bugs": {
 		"url": "https://github.com/crypto-browserify/browserify-sign/issues"

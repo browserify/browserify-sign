@@ -5,6 +5,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v4.2.2](https://github.com/browserify/browserify-sign/compare/v4.2.1...v4.2.2) - 2023-10-25
+
+### Fixed
+
+- [Tests] log when openssl doesn't support cipher [`#37`](https://github.com/browserify/browserify-sign/issues/37)
+
+### Commits
+
+- Only apps should have lockfiles [`09a8995`](https://github.com/browserify/browserify-sign/commit/09a89959393b3c89fedd4f7f3bafa4fec44371d7)
+- [eslint] switch to eslint [`83fe463`](https://github.com/browserify/browserify-sign/commit/83fe46374b819e959d56d2c0b931308f7451a664)
+- [meta] add `npmignore` and `auto-changelog` [`4418183`](https://github.com/browserify/browserify-sign/commit/44181838e7dcc4d5d0c568f74312ea28f0bcdfd5)
+- [meta] fix package.json indentation [`9ac5a5e`](https://github.com/browserify/browserify-sign/commit/9ac5a5eaaac8a11eb70ec2febd13745c8764ae02)
+- [Tests] migrate from travis to github actions [`d845d85`](https://github.com/browserify/browserify-sign/commit/d845d855def38e2085d5a21e447a48300f99fa60)
+- [Fix] `sign`: throw on unsupported padding scheme [`8767739`](https://github.com/browserify/browserify-sign/commit/8767739a4516289568bcce9fed8a3b7e23478de9)
+- [Fix] properly check the upper bound for DSA signatures [`85994cd`](https://github.com/browserify/browserify-sign/commit/85994cd6348b50f2fd1b73c54e20881416f44a30)
+- [Tests] handle openSSL not supporting a scheme [`f5f17c2`](https://github.com/browserify/browserify-sign/commit/f5f17c27f9824de40b5ce8ebd8502111203fd6af)
+- [Deps] update `bn.js`, `browserify-rsa`, `elliptic`, `parse-asn1`, `readable-stream`, `safe-buffer` [`a67d0eb`](https://github.com/browserify/browserify-sign/commit/a67d0eb4ffceabb366b69da69ce9a223e9d5e96b)
+- [Dev Deps] update `nyc`, `standard`, `tape` [`cc5350b`](https://github.com/browserify/browserify-sign/commit/cc5350b96702fcba930e0662cf763844fd2f59bf)
+- [Tests] always run coverage; downgrade `nyc` [`75ce1d5`](https://github.com/browserify/browserify-sign/commit/75ce1d5c49a6591dd13422016c07f8f9cae13371)
+- [meta] add `safe-publish-latest` [`dcf49ce`](https://github.com/browserify/browserify-sign/commit/dcf49ce85a1a66a6fb31689508d916d7894286a9)
+- [Tests] add `npm run posttest` [`75dd8fd`](https://github.com/browserify/browserify-sign/commit/75dd8fd6ce56eb37b12e30807e5f913867b21733)
+- [Dev Deps] update `tape` [`3aec038`](https://github.com/browserify/browserify-sign/commit/3aec0386dc8dfba8698be756ec770df863867c84)
+- [Tests] skip unsupported schemes [`703c83e`](https://github.com/browserify/browserify-sign/commit/703c83ea72db2f45714fe749c6f04b05243ca9a8)
+- [Tests] node &lt; 6 lacks array `includes` [`3aa43cf`](https://github.com/browserify/browserify-sign/commit/3aa43cfbc1fdde8481bcdd3bff581574159b869a)
+- [Dev Deps] fix eslint range [`98d4e0d`](https://github.com/browserify/browserify-sign/commit/98d4e0d7ff18871b0ca07415f758a610ccf8ebbe)
+
 ## [v4.2.1](https://github.com/browserify/browserify-sign/compare/v4.2.0...v4.2.1) - 2020-08-04
 
 ### Merged
