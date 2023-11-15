@@ -1,6 +1,6 @@
 'use strict';
 
-var crypto = require('crypto');
+const crypto = require('crypto');
 
 exports.createSign = crypto.createSign;
 exports.Sign = crypto.Sign;
