@@ -54,7 +54,7 @@
 	},
 	"browser": "browser/index.js",
 	"engines": {
-		"node": ">= 1"
+		"node": ">= 0.12"
 	},
 	"auto-changelog": {
 		"output": "CHANGELOG.md",
