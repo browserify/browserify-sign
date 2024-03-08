@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v4.2.3](https://github.com/browserify/browserify-sign/compare/v4.2.2...v4.2.3) - 2024-03-05
+
+### Commits
+
+- [patch] widen support to 0.12 [`9247adf`](https://github.com/browserify/browserify-sign/commit/9247adfd261ededfec1c036c9d8f36c4e9f87c0e)
+- [patch] drop minimum node support to v1 [`4d0ee49`](https://github.com/browserify/browserify-sign/commit/4d0ee49ae2dc238b877dce9aed7e23fb4cb5088d)
+- [Dev Deps] update `aud`, `npmignore`, `tape` [`87f3a35`](https://github.com/browserify/browserify-sign/commit/87f3a35a587b377da2c1987af8d41c57b5afe0a5)
+- [actions] remove redundant finisher [`37a4758`](https://github.com/browserify/browserify-sign/commit/37a475856843b7d1b2403fdafac0024ba252e579)
+- [Deps] pin `hash-base` to ~3.0, due to a breaking change [`9e2bf12`](https://github.com/browserify/browserify-sign/commit/9e2bf122b70970cb92f69d53e963f18299f14d66)
+- [Deps] update `parse-asn1 [`f427270`](https://github.com/browserify/browserify-sign/commit/f427270ac11dc6be29f87d7afb046c16376a5a9c)
+- [Deps] update `elliptic` [`fb261ce`](https://github.com/browserify/browserify-sign/commit/fb261cea57f92b3d98bc4d8bc6228c43a5de2e91)
+- [Deps] pin `elliptic` due to a breaking change [`168e16f`](https://github.com/browserify/browserify-sign/commit/168e16fcb54886a0281b0c983e1482a097042684)
+
 ## [v4.2.2](https://github.com/browserify/browserify-sign/compare/v4.2.1...v4.2.2) - 2023-10-25
 
 ### Fixed
