@@ -6,11 +6,6 @@
 		"url": "https://github.com/crypto-browserify/browserify-sign/issues"
 	},
 	"license": "ISC",
-	"files": [
-		"browser",
-		"index.js",
-		"algos.js"
-	],
 	"main": "index.js",
 	"repository": {
 		"type": "git",
@@ -65,7 +60,9 @@
 	},
 	"publishConfig": {
 		"ignore": [
-			".github/workflows"
+			".github/workflows",
+			".eslintrc",
+			"test"
 		]
 	}
 }
