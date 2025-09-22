@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v4.2.4](https://github.com/browserify/browserify-sign/compare/v4.2.3...v4.2.4) - 2025-09-22
+
+### Commits
+
+- [actions] split out node 10-20, and 20+ [`17920d9`](https://github.com/browserify/browserify-sign/commit/17920d944f04efee7ae2212e4339485ba306b723)
+- [meta] remove `files` field [`6d5b280`](https://github.com/browserify/browserify-sign/commit/6d5b280e0496201ba022874c864b0046a74eb45e)
+- [Deps] update `bn.js`, `browserify-rsa`, `elliptic` [`31be0c2`](https://github.com/browserify/browserify-sign/commit/31be0c2459e1aad5158f72576c057603bf8527b6)
+- [Dev Deps] update `@ljharb/eslint-config`, `auto-changelog`, `semver`, `tape` [`5f66982`](https://github.com/browserify/browserify-sign/commit/5f6698211aa1d6dddaba8c245f40f63ae28924a3)
+- [Tests] replace `aud` with `npm audit` [`d44b24d`](https://github.com/browserify/browserify-sign/commit/d44b24d8691d699ccc76780b106fe9c1bf0d1558)
+- [Dev Deps] add missing peer dep [`ab975f4`](https://github.com/browserify/browserify-sign/commit/ab975f4845ea5c931df037e7f0df60f045335ae7)
+- [Deps] revert 9e2bf12, now that v3.1.1 is out [`428cf7f`](https://github.com/browserify/browserify-sign/commit/428cf7f3f0d09f1b39312e5e51620ca684b5c1ac)
+
 ## [v4.2.3](https://github.com/browserify/browserify-sign/compare/v4.2.2...v4.2.3) - 2024-03-05
 
 ### Commits
