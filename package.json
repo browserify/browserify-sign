@@ -29,11 +29,11 @@
 		"postversion": "auto-changelog && git add CHANGELOG.md && git commit --no-edit --amend && git tag -f \"v$(node -e \"console.log(require('./package.json').version)\")\""
 	},
 	"dependencies": {
-		"bn.js": "^5.2.1",
-		"browserify-rsa": "^4.1.0",
+		"bn.js": "^5.2.2",
+		"browserify-rsa": "^4.1.1",
 		"create-hash": "^1.2.0",
 		"create-hmac": "^1.1.7",
-		"elliptic": "^6.5.5",
+		"elliptic": "^6.6.1",
 		"inherits": "^2.0.4",
 		"parse-asn1": "^5.1.7",
 		"readable-stream": "^2.3.8",
