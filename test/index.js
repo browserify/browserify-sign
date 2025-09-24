@@ -2,7 +2,7 @@
 
 var Buffer = require('safe-buffer').Buffer;
 var asn1 = require('parse-asn1/asn1');
-var test = require('tape').test;
+var test = require('tape');
 var nCrypto = require('crypto');
 var semver = require('semver');
 var BN = require('bn.js');
@@ -13,56 +13,60 @@ var fixtures = require('./fixtures');
 
 var supportsPassphrases = semver.satisfies(process.versions.node, '>= 0.11.8');
 
-fixtures.valid.rsa.forEach(function (f) {
-  var message = Buffer.from(f.message);
-  var pub = Buffer.from(f['public'], 'base64');
-  var priv;
+test('valid RSA fixtures', function (t) {
+  fixtures.valid.rsa.forEach(function (f) {
+    var message = Buffer.from(f.message);
+    var pub = Buffer.from(f['public'], 'base64');
 
-  if (f.passphrase) {
-    if (!supportsPassphrases) {
-      console.info('skipping passphrase test on a node version that lacks support for it');
-      return;
-    }
-    priv = {
-      key: Buffer.from(f['private'], 'base64'),
-      passphrase: f.passphrase
-    };
-  } else {
-    priv = Buffer.from(f['private'], 'base64');
-  }
+    t.test('fixture: ' + f.message, { skip: !(nCrypto.getHashes().indexOf(f.scheme) >= 0) }, function (st) {
+      var priv;
 
-  (nCrypto.getHashes().indexOf(f.scheme) >= 0 ? test : test.skip)(f.message, function (t) {
-    var bSign;
-    try {
-      bSign = bCrypto.createSign(f.scheme);
-    } catch (e) {
-      console.info('skipping unsupported browserify-sign scheme', f.scheme);
-      t.end();
-      return;
-    }
+      if (f.passphrase) {
+        if (!supportsPassphrases) {
+          st.comment('SKIP skipping passphrase test on a node version that lacks support for it');
+          st.end();
+          return;
+        }
+        priv = {
+          key: Buffer.from(f['private'], 'base64'),
+          passphrase: f.passphrase
+        };
+      } else {
+        priv = Buffer.from(f['private'], 'base64');
+      }
 
-    try {
-      var nSign = nCrypto.createSign(f.scheme);
-    } catch (e) {
-      console.info('skipping unsupported node scheme', f.scheme);
-      t.end();
-      return;
-    }
+      var bSign;
+      try {
+        bSign = bCrypto.createSign(f.scheme);
+      } catch (e) {
+        st.comment('SKIP skipping unsupported browserify-sign scheme ' + f.scheme);
+        st.end();
+        return;
+      }
 
-    var bSig = bSign.update(message).sign(priv);
-    var nSig = nSign.update(message).sign(priv);
+      try {
+        var nSign = nCrypto.createSign(f.scheme);
+      } catch (e) {
+        st.comment('SKIP skipping unsupported node scheme ' + f.scheme);
+        st.end();
+        return;
+      }
 
-    t.equals(bSig.length, nSig.length, 'correct length');
-    t.equals(bSig.toString('hex'), nSig.toString('hex'), 'equal sigs');
-    t.equals(bSig.toString('hex'), f.signature, 'compare to known');
+      var bSig = bSign.update(message).sign(priv);
+      var nSig = nSign.update(message).sign(priv);
 
-    t.ok(nCrypto.createVerify(f.scheme).update(message).verify(pub, nSig), 'node validate node sig');
-    t.ok(nCrypto.createVerify(f.scheme).update(message).verify(pub, bSig), 'node validate browser sig');
+      st.equals(bSig.length, nSig.length, 'correct length');
+      st.equals(bSig.toString('hex'), nSig.toString('hex'), 'equal sigs');
+      st.equals(bSig.toString('hex'), f.signature, 'compare to known');
 
-    t.ok(bCrypto.createVerify(f.scheme).update(message).verify(pub, nSig), 'browser validate node sig');
-    t.ok(bCrypto.createVerify(f.scheme).update(message).verify(pub, bSig), 'browser validate browser sig');
+      st.ok(nCrypto.createVerify(f.scheme).update(message).verify(pub, nSig), 'node validate node sig');
+      st.ok(nCrypto.createVerify(f.scheme).update(message).verify(pub, bSig), 'node validate browser sig');
 
-    t.end();
+      st.ok(bCrypto.createVerify(f.scheme).update(message).verify(pub, nSig), 'browser validate node sig');
+      st.ok(bCrypto.createVerify(f.scheme).update(message).verify(pub, bSig), 'browser validate browser sig');
+
+      st.end();
+    });
   });
 });
 
@@ -96,106 +100,110 @@ fixtures.valid.rsa.forEach(function (f) {
   t.end();
 });
 
-fixtures.valid.ec.forEach(function (f) {
-  var message = Buffer.from(f.message);
-  var pub = Buffer.from(f['public'], 'base64');
-  var priv;
+test('valid EC fixtures', function (t) {
+  fixtures.valid.ec.forEach(function (f) {
+    var message = Buffer.from(f.message);
+    var pub = Buffer.from(f['public'], 'base64');
 
-  if (f.passphrase) {
-    if (!supportsPassphrases) {
-      console.info('skipping passphrase test on a node version that lacks support for it');
-      return;
-    }
-    priv = {
-      key: Buffer.from(f['private'], 'base64'),
-      passphrase: f.passphrase
-    };
-  } else {
-    priv = Buffer.from(f['private'], 'base64');
-  }
+    t.test('fixture: ' + f.message, { skip: !(nCrypto.getHashes().indexOf(f.scheme) >= 0) }, function (st) {
+      var priv;
 
-  (nCrypto.getHashes().indexOf(f.scheme) >= 0 ? test : test.skip)(f.message, function (t) {
-    var nSign;
-    try {
-      nSign = nCrypto.createSign(f.scheme);
-    } catch (e) {
-      console.info('skipping unsupported browserify-sign scheme', f.scheme);
-      t.end();
-      return;
-    }
+      if (f.passphrase) {
+        if (!supportsPassphrases) {
+          st.comment('SKIP skipping passphrase test on a node version that lacks support for it');
+          st.end();
+          return;
+        }
+        priv = {
+          key: Buffer.from(f['private'], 'base64'),
+          passphrase: f.passphrase
+        };
+      } else {
+        priv = Buffer.from(f['private'], 'base64');
+      }
 
-    var bSign;
-    try {
-      bSign = bCrypto.createSign(f.scheme);
-    } catch (e) {
-      console.info('skipping unsupported node scheme', f.scheme);
-      t.end();
-      return;
-    }
-
-    var bSig = bSign.update(message).sign(priv);
-    var nSig = nSign.update(message).sign(priv);
-    t.notEqual(bSig.toString('hex'), nSig.toString('hex'), 'not equal sigs');
-    t.equals(bSig.toString('hex'), f.signature, 'sig is determanistic');
-
-    var nVer = nCrypto.createVerify(f.scheme);
-    t.ok(nVer.update(message).verify(pub, bSig), 'node validate browser sig');
-
-    var bVer = bCrypto.createVerify(f.scheme);
-    t.ok(bVer.update(message).verify(pub, nSig), 'browser validate node sig');
-
-    t.end();
-  });
-
-  if (f.scheme !== 'DSA' && f.scheme.toLowerCase().indexOf('dsa') === -1) {
-    test(f.message + ' named rsa through', function (t) {
-      var scheme = 'RSA-' + f.scheme.toUpperCase();
-      var nSign = nCrypto.createSign(scheme);
-      var bSign = bCrypto.createSign(scheme);
-
-      var bSig = bSign.update(message).sign(priv);
-      var nSig = nSign.update(message).sign(priv);
-      t.notEqual(bSig.toString('hex'), nSig.toString('hex'), 'not equal sigs');
-      t.equals(bSig.toString('hex'), f.signature, 'sig is determanistic');
-
-      var nVer = nCrypto.createVerify(f.scheme);
-      t.ok(nVer.update(message).verify(pub, bSig), 'node validate browser sig');
-
-      var bVer = bCrypto.createVerify(f.scheme);
-      t.ok(bVer.update(message).verify(pub, nSig), 'browser validate node sig');
-
-      t.end();
-    });
-  }
-
-  var s = parseKeys(pub).data.q;
-  test(
-    f.message + ' against a fake signature',
-    { skip: !s || '(this test only applies to DSA signatures and not EC signatures, this is ' + f.scheme + ')' },
-    function (t) {
-      var messageBase64 = Buffer.from(f.message, 'base64');
-
-      // forge a fake signature
-      var r = new BN('1');
-
+      var nSign;
       try {
-        var fakeSig = asn1.signature.encode({ r: r, s: s }, 'der');
+        nSign = nCrypto.createSign(f.scheme);
       } catch (e) {
-        t.ifError(e);
-        t.end();
+        st.comment('SKIP skipping unsupported browserify-sign scheme', f.scheme);
+        st.end();
         return;
       }
 
-      var bVer = bCrypto.createVerify(f.scheme);
-      t['throws'](
-        function () { bVer.update(messageBase64).verify(pub, fakeSig); },
-        Error,
-        'fake signature is invalid'
-      );
+      var bSign;
+      try {
+        bSign = bCrypto.createSign(f.scheme);
+      } catch (e) {
+        st.comment('SKIP skipping unsupported node scheme', f.scheme);
+        st.end();
+        return;
+      }
 
-      t.end();
-    }
-  );
+      var bSig = bSign.update(message).sign(priv);
+      var nSig = nSign.update(message).sign(priv);
+      st.notEqual(bSig.toString('hex'), nSig.toString('hex'), 'not equal sigs');
+      st.equals(bSig.toString('hex'), f.signature, 'sig is determanistic');
+
+      var nVer = nCrypto.createVerify(f.scheme);
+      st.ok(nVer.update(message).verify(pub, bSig), 'node validate browser sig');
+
+      var bVer = bCrypto.createVerify(f.scheme);
+      st.ok(bVer.update(message).verify(pub, nSig), 'browser validate node sig');
+
+      if (f.scheme !== 'DSA' && f.scheme.toLowerCase().indexOf('dsa') === -1) {
+        st.test(f.message + ' named rsa through', function (s2t) {
+          var scheme = 'RSA-' + f.scheme.toUpperCase();
+          var nSign2 = nCrypto.createSign(scheme);
+          var bSign2 = bCrypto.createSign(scheme);
+
+          var bSig2 = bSign2.update(message).sign(priv);
+          var nSig2 = nSign2.update(message).sign(priv);
+          s2t.notEqual(bSig2.toString('hex'), nSig2.toString('hex'), 'not equal sigs');
+          s2t.equals(bSig2.toString('hex'), f.signature, 'sig is determanistic');
+
+          var nVer2 = nCrypto.createVerify(f.scheme);
+          s2t.ok(nVer2.update(message).verify(pub, bSig2), 'node validate browser sig');
+
+          var bVer2 = bCrypto.createVerify(f.scheme);
+          s2t.ok(bVer2.update(message).verify(pub, nSig2), 'browser validate node sig');
+
+          s2t.end();
+        });
+      }
+
+      st.end();
+    });
+
+    var s = parseKeys(pub).data.q;
+    t.test(
+      f.message + ' against a fake signature',
+      { skip: !s || '(this test only applies to DSA signatures and not EC signatures, this is ' + f.scheme + ')' },
+      function (st) {
+        var messageBase64 = Buffer.from(f.message, 'base64');
+
+        // forge a fake signature
+        var r = new BN('1');
+
+        try {
+          var fakeSig = asn1.signature.encode({ r: r, s: s }, 'der');
+        } catch (e) {
+          st.ifError(e);
+          st.end();
+          return;
+        }
+
+        var bVer = bCrypto.createVerify(f.scheme);
+        st['throws'](
+          function () { bVer.update(messageBase64).verify(pub, fakeSig); },
+          Error,
+          'fake signature is invalid'
+        );
+
+        st.end();
+      }
+    );
+  });
 });
 
 fixtures.valid.kvectors.forEach(function (f) {
