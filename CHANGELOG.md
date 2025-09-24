@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v4.2.5](https://github.com/browserify/browserify-sign/compare/v4.2.4...v4.2.5) - 2025-09-24
+
+### Commits
+
+- [Tests] clean up tests and convert console info skips to tape skips [`37b083c`](https://github.com/browserify/browserify-sign/commit/37b083c602fb6fcd99e0856cba8859dc6f073f3c)
+- [Fix] restore node 0.10 support [`faade86`](https://github.com/browserify/browserify-sign/commit/faade86fe051fc0fb1b59e3694a566116e1e79a7)
+- [Deps] update `parse-asn1` [`5a0f159`](https://github.com/browserify/browserify-sign/commit/5a0f159e1d32b5c1088a75dceb301afaf40446f9)
+- [actions] drop unsupported nodes from CI [`106be97`](https://github.com/browserify/browserify-sign/commit/106be97da87f296f187c44b9ee857384153b5068)
+
 ## [v4.2.4](https://github.com/browserify/browserify-sign/compare/v4.2.3...v4.2.4) - 2025-09-22
 
 ### Commits
