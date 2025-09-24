@@ -11,12 +11,18 @@ var parseKeys = require('parse-asn1');
 var bCrypto = require('../browser');
 var fixtures = require('./fixtures');
 
+var supportsPassphrases = semver.satisfies(process.versions.node, '>= 0.11.8');
+
 fixtures.valid.rsa.forEach(function (f) {
   var message = Buffer.from(f.message);
   var pub = Buffer.from(f['public'], 'base64');
   var priv;
 
   if (f.passphrase) {
+    if (!supportsPassphrases) {
+      console.info('skipping passphrase test on a node version that lacks support for it');
+      return;
+    }
     priv = {
       key: Buffer.from(f['private'], 'base64'),
       passphrase: f.passphrase
@@ -96,6 +102,10 @@ fixtures.valid.ec.forEach(function (f) {
   var priv;
 
   if (f.passphrase) {
+    if (!supportsPassphrases) {
+      console.info('skipping passphrase test on a node version that lacks support for it');
+      return;
+    }
     priv = {
       key: Buffer.from(f['private'], 'base64'),
       passphrase: f.passphrase
