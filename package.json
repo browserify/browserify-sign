@@ -24,7 +24,7 @@
 		"postversion": "auto-changelog && git add CHANGELOG.md && git commit --no-edit --amend && git tag -f \"v$(node -e \"console.log(require('./package.json').version)\")\""
 	},
 	"dependencies": {
-		"bn.js": "^5.2.2",
+		"bn.js": "^5.2.3",
 		"browserify-rsa": "^4.1.1",
 		"create-hash": "^1.2.0",
 		"create-hmac": "^1.1.7",
