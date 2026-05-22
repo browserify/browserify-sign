@@ -72,6 +72,29 @@ test('valid RSA fixtures', function (t) {
   });
 });
 
+test('generic SHA algorithms sign RSA keys like node', function (t) {
+  var f = fixtures.valid.rsa[0];
+  var message = Buffer.from(f.message);
+  var priv = Buffer.from(f['private'], 'base64');
+  var pub = Buffer.from(f['public'], 'base64');
+
+  ['sha224', 'sha256', 'sha384', 'sha512'].forEach(function (scheme) {
+    t.test('algorithm: ' + scheme, { skip: !(nCrypto.getHashes().indexOf(scheme) >= 0) }, function (st) {
+      var bSig = bCrypto.createSign(scheme).update(message).sign(priv);
+      var nSig = nCrypto.createSign(scheme).update(message).sign(priv);
+
+      st.equals(bSig.length, nSig.length, 'correct length');
+      st.equals(bSig.toString('hex'), nSig.toString('hex'), 'equal sigs');
+      st.ok(nCrypto.createVerify(scheme).update(message).verify(pub, bSig), 'node validates browser sig');
+      st.ok(bCrypto.createVerify(scheme).update(message).verify(pub, nSig), 'browser validates node sig');
+
+      st.end();
+    });
+  });
+
+  t.end();
+});
+
 // node has padding support since 8.0
 // TODO: figure out why node v8.0 - v8.6 is broken
 (semver.satisfies(process.versions.node, '>= 8.6') ? test : test.skip)('padding option', function (t) {
