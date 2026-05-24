@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v4.2.6](https://github.com/browserify/browserify-sign/compare/v4.2.5...v4.2.6) - 2026-05-24
+
+### Commits
+
+- [Tests] increase coverage [`6f06a33`](https://github.com/browserify/browserify-sign/commit/6f06a33bd0fe2026a7bbd29615247eef8857a3be)
+- [Fix] sign/verify generic SHA algorithms with RSA keys [`d2a3f56`](https://github.com/browserify/browserify-sign/commit/d2a3f56849f6144fa401747f3a7d4ba50b2f6375)
+- [Dev Deps] update `@ljharb/eslint-config`, `eslint`, `npmignore` [`5916347`](https://github.com/browserify/browserify-sign/commit/59163472512ff1dd7364e306c2f84c9612713e59)
+- [Dev Deps] update `@ljharb/eslint-config`, `auto-changelog` [`fb4be1d`](https://github.com/browserify/browserify-sign/commit/fb4be1da89c096a702db2516ee7a316efb84f90f)
+- [Deps] update `bn.js` [`da15004`](https://github.com/browserify/browserify-sign/commit/da150041ced8bdf06d1115c6f9443bac066dd6ee)
+- [meta] set audit-level to make posttest happy [`224dffe`](https://github.com/browserify/browserify-sign/commit/224dffe2ff5d2e4bed83f360aab4ada951a66544)
+
 ## [v4.2.5](https://github.com/browserify/browserify-sign/compare/v4.2.4...v4.2.5) - 2025-09-24
 
 ### Commits
