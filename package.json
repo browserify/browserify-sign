@@ -35,9 +35,8 @@
 		"safe-buffer": "^5.2.1"
 	},
 	"devDependencies": {
-		"@ljharb/eslint-config": "^22.2.0",
-		"auto-changelog": "^2.5.0",
-		"encoding": "^0.1.13",
+		"@ljharb/eslint-config": "^22.2.3",
+		"auto-changelog": "^2.5.1",
 		"eslint": "^8.57.1",
 		"in-publish": "^2.0.1",
 		"npmignore": "^0.3.5",
