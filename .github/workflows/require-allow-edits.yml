@@ -2,6 +2,8 @@ name: Require “Allow Edits”
 
 on: [pull_request_target]
 
+cache-mode: none
+
 jobs:
   _:
     name: "Require “Allow Edits”"
