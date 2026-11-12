@@ -67,10 +67,14 @@ function dsaVerify(sig, hash, pub) {
   var r = unpacked.r;
   checkValue(s, q);
   checkValue(r, q);
+  // use the leftmost bits of the hash, as many as q has (FIPS 186-4, 4.7), like sign does
+  var h = new BN(hash);
+  var shift = (hash.length << 3) - q.bitLength();
+  if (shift > 0) { h.ishrn(shift); }
   var montp = BN.mont(p);
   var w = s.invm(q);
   var v = g.toRed(montp)
-    .redPow(new BN(hash).mul(w).mod(q))
+    .redPow(h.mul(w).mod(q))
     .fromRed()
     .mul(y.toRed(montp).redPow(r.mul(w).mod(q)).fromRed())
     .mod(p)

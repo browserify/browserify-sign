@@ -668,3 +668,49 @@ test('RSA verify with small key (padNum < 8 branch)', { skip: !semver.satisfies(
 
   t.end();
 });
+
+test('DSA verify with a hash longer than q', function (t) {
+  // fixture 0 has a 160-bit q, fixture 1 a 256-bit q
+  [fixtures.valid.ec[0], fixtures.valid.ec[1]].forEach(function (f) {
+    var pub = Buffer.from(f['public'], 'base64');
+    var priv = Buffer.from(f['private'], 'base64');
+    var qBits = parseKeys(pub).data.q.bitLength();
+    var message = Buffer.from('hello');
+
+    ['DSA-SHA224', 'DSA-SHA256', 'DSA-SHA384', 'DSA-SHA512'].forEach(function (scheme) {
+      t.test(scheme + ' with a ' + qBits + '-bit q', function (st) {
+        var bSig = bCrypto.createSign(scheme).update(message).sign(priv);
+        st.ok(
+          bCrypto.createVerify(scheme).update(message).verify(pub, bSig),
+          'browser verify accepts a browser signature'
+        );
+        st.notOk(
+          bCrypto.createVerify(scheme).update(Buffer.from('hellp')).verify(pub, bSig),
+          'browser verify rejects the signature for another message'
+        );
+
+        var nodeHash = scheme.split('-')[1].toLowerCase();
+        var nSig;
+        try {
+          nSig = nCrypto.createSign(nodeHash).update(message).sign(priv);
+        } catch (e) {
+          st.comment('SKIP node cannot sign ' + scheme + ' with a DSA key');
+          st.end();
+          return;
+        }
+        st.ok(
+          nCrypto.createVerify(nodeHash).update(message).verify(pub, bSig),
+          'node verify accepts the browser signature'
+        );
+        st.ok(
+          bCrypto.createVerify(scheme).update(message).verify(pub, nSig),
+          'browser verify accepts a node signature'
+        );
+
+        st.end();
+      });
+    });
+  });
+
+  t.end();
+});
